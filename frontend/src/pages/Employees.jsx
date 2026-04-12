@@ -199,7 +199,7 @@ const Employees = () => {
           </svg>
           <input
             type="text"
-            placeholder="Search employees..."
+            placeholder="Search here..."
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
@@ -210,157 +210,184 @@ const Employees = () => {
         </div>
       </div>
 
-      {/* Breadcrumb */}
-      <div className="breadcrumb">
-        <span className="breadcrumb-item">Home</span>
-        <span className="breadcrumb-separator">›</span>
-        <span className="breadcrumb-item active">Employees</span>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="employees-actions">
-        <button
-          className="btn btn-primary"
-          onClick={() => setShowAddModal(true)}
-        >
-          Add Employees
-        </button>
-        {selectedEmployees.length > 0 && (
-          <button
-            className="btn btn-danger"
-            onClick={handleBulkDelete}
-          >
-            Delete Selected ({selectedEmployees.length})
-          </button>
-        )}
-      </div>
-
-      {/* Error Message */}
-      {error && <div className="error-banner">{error}</div>}
-
-      {/* Employees Table */}
-      <div className="employees-table-container">
-        {loading && !employees.length ? (
-          <div className="loading">Loading employees...</div>
-        ) : employees.length === 0 ? (
-          <div className="empty-state">
-            <p>No employees found. Create your first employee by clicking "Add Employees"</p>
+      <div className="employees-content">
+        {/* Header Section */}
+        <div className="employees-header">
+          {/* Breadcrumb */}
+          <div className="breadcrumb">
+            <span className="breadcrumb-item">Home</span>
+            <span className="breadcrumb-separator">›</span>
+            <span className="breadcrumb-item active">Employees</span>
           </div>
-        ) : (
-          <table className="employees-table">
-            <thead>
-              <tr>
-                <th>
-                  <input
-                    type="checkbox"
-                    checked={selectedEmployees.length === employees.length && employees.length > 0}
-                    onChange={toggleAllCheckboxes}
-                    className="table-checkbox"
-                  />
-                </th>
-                <th>Name</th>
-                <th>Employee ID</th>
-                <th>Assigned Leads</th>
-                <th>Closed Leads</th>
-                <th>Status</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {employees.map((employee) => (
-                <tr key={employee._id}>
-                  <td>
+
+          {/* Action Buttons */}
+          <div className="employees-actions">
+            <button
+              className="btn btn-primary"
+              onClick={() => setShowAddModal(true)}
+            >
+              Add Employees
+            </button>
+            {selectedEmployees.length > 0 && (
+              <button
+                className="btn btn-danger"
+                onClick={handleBulkDelete}
+              >
+                Delete Selected ({selectedEmployees.length})
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Error Message */}
+        {error && <div className="error-banner">{error}</div>}
+
+        {/* Employees Table */}
+        <div className="employees-table-container">
+          {loading && !employees.length ? (
+            <div className="loading">Loading employees...</div>
+          ) : employees.length === 0 ? (
+            <div className="empty-state">
+              <p>No employees found. Create your first employee by clicking "Add Employees"</p>
+            </div>
+          ) : (
+            <table className="employees-table">
+              <thead>
+                <tr>
+                  <th>
                     <input
                       type="checkbox"
-                      checked={selectedEmployees.includes(employee._id)}
-                      onChange={() => toggleCheckbox(employee._id)}
+                      checked={selectedEmployees.length === employees.length && employees.length > 0}
+                      onChange={toggleAllCheckboxes}
                       className="table-checkbox"
                     />
-                  </td>
-                  <td>
-                    <div className="employee-cell">
-                      <div className="avatar">{getInitials(employee.name)}</div>
-                      <div className="employee-info">
-                        <div className="employee-name">{employee.name}</div>
-                        <div className="employee-email">{employee.email}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>{employee.employeeId}</td>
-                  <td>{employee.assignedLeads || 0}</td>
-                  <td>{employee.closedLeads || 0}</td>
-                  <td>
-                    <span className={`status-badge status-${(employee.status || 'Active').toLowerCase()}`}>
-                      {employee.status || 'Active'}
-                    </span>
-                  </td>
-                  <td className="action-cell">
-                    <div className="menu-container">
-                      <button
-                        className="menu-btn"
-                        onClick={() => setMenuOpen(menuOpen === employee._id ? null : employee._id)}
-                      >
-                        ⋮
-                      </button>
-                      {menuOpen === employee._id && (
-                        <div className="menu-dropdown">
-                          <button
-                            className="menu-item"
-                            onClick={() => openEditModal(employee)}
-                          >
-                            ✏️ Edit
-                          </button>
-                          <button
-                            className="menu-item delete"
-                            onClick={() => handleDeleteEmployee(employee._id)}
-                          >
-                            🗑️ Delete
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </td>
+                  </th>
+                  <th>Name</th>
+                  <th>Employee ID</th>
+                  <th>Assigned Leads</th>
+                  <th>Closed Leads</th>
+                  <th>Status</th>
+                  <th></th>
                 </tr>
+              </thead>
+              <tbody>
+                {employees.map((employee) => (
+                  <tr key={employee._id}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={selectedEmployees.includes(employee._id)}
+                        onChange={() => toggleCheckbox(employee._id)}
+                        className="table-checkbox"
+                      />
+                    </td>
+                    <td>
+                      <div className="employee-cell">
+                        <div className="avatar">
+                          {employee.profileImage ? (
+                            <img src={employee.profileImage} alt={employee.name} className="avatar-img" />
+                          ) : (
+                            getInitials(employee.name)
+                          )}
+                        </div>
+                        <div className="employee-info">
+                          <div className="employee-name">{employee.name}</div>
+                          <div className="employee-email">{employee.email}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span className="employee-id-badge">{employee.employeeId}</span>
+                    </td>
+                    <td>{employee.assignedLeads || 0}</td>
+                    <td>{employee.closedLeads || 0}</td>
+                    <td>
+                      <span className={`status-badge status-${(employee.status || 'Active').toLowerCase()}`}>
+                        {employee.status || 'Active'}
+                      </span>
+                    </td>
+                    <td className="action-cell">
+                      <div className="menu-container">
+                        <button
+                          className="menu-btn"
+                          onClick={() => setMenuOpen(menuOpen === employee._id ? null : employee._id)}
+                        >
+                          ⋮
+                        </button>
+                        {menuOpen === employee._id && (
+                          <div className="menu-dropdown">
+                            <button
+                              className="menu-item"
+                              onClick={() => openEditModal(employee)}
+                            >
+                              <svg className="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                              </svg>
+                              Edit
+                            </button>
+                            <button
+                              className="menu-item delete"
+                              onClick={() => handleDeleteEmployee(employee._id)}
+                            >
+                              <svg className="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                              </svg>
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        {/* Pagination */}
+        {!loading && employees.length > 0 && (
+          <div className="pagination">
+            <div className="pagination-left">
+              <button
+                className="pagination-btn"
+                onClick={() => fetchEmployees(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                <span>Previous</span>
+              </button>
+            </div>
+
+            <div className="pagination-numbers">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  className={`pagination-number ${currentPage === page ? 'active' : ''}`}
+                  onClick={() => fetchEmployees(page)}
+                >
+                  {page}
+                </button>
               ))}
-            </tbody>
-          </table>
+            </div>
+
+            <div className="pagination-right">
+              <button
+                className="pagination-btn"
+                onClick={() => fetchEmployees(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                <span>Next</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+            </div>
+          </div>
         )}
       </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="pagination">
-          <button
-            className="pagination-btn"
-            onClick={() => fetchEmployees(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            ‹ Previous
-          </button>
-          <div className="pagination-numbers">
-            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-              const pageNum = i + 1;
-              return (
-                <button
-                  key={pageNum}
-                  className={`pagination-number ${currentPage === pageNum ? 'active' : ''}`}
-                  onClick={() => fetchEmployees(pageNum)}
-                >
-                  {pageNum}
-                </button>
-              );
-            })}
-            {totalPages > 5 && <span className="pagination-dots">...</span>}
-          </div>
-          <button
-            className="pagination-btn"
-            onClick={() => fetchEmployees(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            Next ›
-          </button>
-        </div>
-      )}
 
       {/* Add Employee Modal */}
       {showAddModal && (
@@ -371,29 +398,27 @@ const Employees = () => {
               <button className="modal-close" onClick={() => setShowAddModal(false)}>✕</button>
             </div>
             <form onSubmit={handleAddEmployee} className="modal-body">
-              <div className="form-row">
-                <div className="form-group">
-                  <label>First name</label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleFormChange}
-                    placeholder="First name"
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Last name</label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleFormChange}
-                    placeholder="Last name"
-                    required
-                  />
-                </div>
+              <div className="form-group">
+                <label>First name</label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleFormChange}
+                  placeholder="Sarthak"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Last name</label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleFormChange}
+                  placeholder="Pal"
+                  required
+                />
               </div>
 
               <div className="form-group">
@@ -403,7 +428,7 @@ const Employees = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleFormChange}
-                  placeholder="Email (will be default password)"
+                  placeholder="Sarthakpal08@gmail.com"
                   required
                 />
               </div>
@@ -415,37 +440,33 @@ const Employees = () => {
                   name="location"
                   value={formData.location}
                   onChange={handleFormChange}
-                  placeholder="e.g., Mumbai, Delhi"
+                  placeholder="Karnataka"
                 />
               </div>
 
               <div className="form-group">
                 <label>Preferred Language</label>
-                <select
-                  name="languages"
-                  value={formData.languages}
-                  onChange={handleFormChange}
-                >
-                  <option value="">Select a language</option>
-                  <option value="Marathi">Marathi</option>
-                  <option value="Kannada">Kannada</option>
-                  <option value="Hindi">Hindi</option>
-                  <option value="English">English</option>
-                  <option value="Bengali">Bengali</option>
-                </select>
+                <div style={{ position: 'relative' }}>
+                  <select
+                    name="languages"
+                    value={formData.languages}
+                    onChange={handleFormChange}
+                  >
+                    <option value="">Tamil</option>
+                    <option value="Marathi">Marathi</option>
+                    <option value="Kannada">Kannada</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="English">English</option>
+                    <option value="Bengali">Bengali</option>
+                  </select>
+                  <span style={{ position: 'absolute', right: '40px', top: '50%', transform: 'translateY(-50%)', color: '#999', fontSize: '14px' }}>ⓘ</span>
+                </div>
               </div>
 
               <div className="modal-footer">
                 <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowAddModal(false)}
-                >
-                  Cancel
-                </button>
-                <button
                   type="submit"
-                  className="btn btn-primary"
+                  className="btn-save"
                   disabled={loading}
                 >
                   {loading ? 'Creating...' : 'Save'}
@@ -507,15 +528,8 @@ const Employees = () => {
 
               <div className="modal-footer">
                 <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowEditModal(false)}
-                >
-                  Cancel
-                </button>
-                <button
                   type="submit"
-                  className="btn btn-primary"
+                  className="btn-save"
                   disabled={loading}
                 >
                   {loading ? 'Updating...' : 'Update'}
