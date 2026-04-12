@@ -175,7 +175,7 @@ const Leads = () => {
         </div>
       </div>
 
-      <div className="leads-content">
+      <div className="leads-content" style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
         {/* Messages */}
         {error && <div className="error-banner">{error}</div>}
         {successMessage && <div className="success-banner">{successMessage}</div>}
@@ -204,50 +204,52 @@ const Leads = () => {
         </div>
 
         {/* Leads Table Wrapper */}
-        <div className="leads-table-wrapper">
+        <div className="leads-table-wrapper" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           {loading ? (
             <div className="loading-spinner">Loading...</div>
           ) : leads.length === 0 ? (
             <div className="no-data">No leads found</div>
           ) : (
-            <table className="leads-table">
-              <thead>
-                <tr>
-                  <th>No.</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Source</th>
-                  <th>Date</th>
-                  <th>Location</th>
-                  <th>Language</th>
-                  <th>Assigned To</th>
-                  <th>Status</th>
-                  <th>Type</th>
-                  <th>Scheduled Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {leads.map((lead, index) => (
-                  <tr key={lead._id} onClick={() => setStatusModalData(lead)}>
-                    <td>{(currentPage - 1) * 10 + index + 1}</td>
-                    <td>{lead.name}</td>
-                    <td>{lead.email}</td>
-                    <td>{lead.source}</td>
-                    <td>{formatDate(lead.date)}</td>
-                    <td>{lead.location}</td>
-                    <td>{lead.language}</td>
-                    <td className="assigned-to-id">{lead.assignedTo?._id || 'N/A'}</td>
-                    <td>{lead.status}</td>
-                    <td>{lead.type}</td>
-                    <td>{formatDate(lead.scheduledDate)}</td>
+            <div style={{ flex: 1, overflowY: 'auto' }}>
+              <table className="leads-table">
+                <thead>
+                  <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Source</th>
+                    <th>Date</th>
+                    <th>Location</th>
+                    <th>Language</th>
+                    <th>Assigned To</th>
+                    <th>Status</th>
+                    <th>Type</th>
+                    <th>Scheduled Date</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {leads.map((lead, index) => (
+                    <tr key={lead._id} onClick={() => setStatusModalData(lead)}>
+                      <td>{(currentPage - 1) * 10 + index + 1}</td>
+                      <td>{lead.name}</td>
+                      <td>{lead.email}</td>
+                      <td>{lead.source}</td>
+                      <td>{formatDate(lead.date)}</td>
+                      <td>{lead.location}</td>
+                      <td>{lead.language}</td>
+                      <td className="assigned-to-id">{lead.assignedTo?._id || 'N/A'}</td>
+                      <td>{lead.status}</td>
+                      <td>{lead.type}</td>
+                      <td>{formatDate(lead.scheduledDate)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
 
-        {/* Pagination outside the white wrapper */}
+        {/* Pagination - Stays at bottom due to flex: 1 on table wrapper */}
         {!loading && leads.length > 0 && (
           <div className="pagination">
             <div className="pagination-left">

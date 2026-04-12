@@ -223,7 +223,7 @@ const Employees = () => {
           {/* Action Buttons */}
           <div className="employees-actions">
             <button
-              className="btn btn-primary"
+              className="btn btn-secondary"
               onClick={() => setShowAddModal(true)}
             >
               Add Employees
