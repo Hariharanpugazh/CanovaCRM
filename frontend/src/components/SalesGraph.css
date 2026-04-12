@@ -1,0 +1,10 @@
+.sales-graph {
+  width: 100%;
+  padding: 12px 0;
+}
+
+@media (max-width: 768px) {
+  .sales-graph {
+    height: 250px;
+  }
+}

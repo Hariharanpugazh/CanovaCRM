@@ -1,0 +1,101 @@
+.sales-people-container {
+  display: flex;
+  flex-direction: column;
+  max-height: 400px;
+  overflow-y: auto;
+  border-radius: 8px;
+}
+
+.sales-people-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sales-people-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.sales-people-container::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 3px;
+}
+
+.sales-people-container::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+.sales-people-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+}
+
+.sales-people-table thead {
+  background-color: #f9f9f9;
+  position: sticky;
+  top: 0;
+}
+
+.sales-people-table th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  color: #666;
+  border-bottom: 2px solid #e0e0e0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sales-people-table td {
+  padding: 12px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #333;
+}
+
+.sales-people-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.name-cell {
+  font-weight: 600;
+  color: #333;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-active {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-inactive {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .sales-people-container {
+    max-height: 300px;
+  }
+
+  .sales-people-table th,
+  .sales-people-table td {
+    padding: 8px;
+    font-size: 12px;
+  }
+}
