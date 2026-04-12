@@ -134,12 +134,22 @@ export const updateLeadStatus = async (req, res) => {
 
 export const getAllLeads = async (req, res) => {
   try {
-    const { page = 1, limit = 10, assignedTo, status, language } = req.query;
+    const { page = 1, limit = 10, assignedTo, status, language, search } = req.query;
 
     const query = {};
     if (assignedTo) query.assignedTo = assignedTo;
     if (status) query.status = status;
     if (language) query.language = language;
+
+    // Support searching by 'name', 'email', and 'location' with case-insensitive regex
+    if (search) {
+      const searchRegex = new RegExp(search, 'i');
+      query.$or = [
+        { name: searchRegex },
+        { email: searchRegex },
+        { location: searchRegex }
+      ];
+    }
 
     const total = await Lead.countDocuments(query);
     const leads = await Lead.find(query)
@@ -153,7 +163,7 @@ export const getAllLeads = async (req, res) => {
       pagination: {
         total,
         pages: Math.ceil(total / limit),
-        currentPage: page
+        currentPage: parseInt(page)
       }
     });
   } catch (error) {
@@ -163,10 +173,20 @@ export const getAllLeads = async (req, res) => {
 
 export const getLeadsByUser = async (req, res) => {
   try {
-    const { page = 1, limit = 10, status } = req.query;
+    const { page = 1, limit = 8, status, search } = req.query;
 
     const query = { assignedTo: req.user._id };
     if (status) query.status = status;
+
+    // Support searching by 'name', 'email', and 'location' with case-insensitive regex
+    if (search) {
+      const searchRegex = new RegExp(search, 'i');
+      query.$or = [
+        { name: searchRegex },
+        { email: searchRegex },
+        { location: searchRegex }
+      ];
+    }
 
     const total = await Lead.countDocuments(query);
     const leads = await Lead.find(query)
@@ -179,7 +199,7 @@ export const getLeadsByUser = async (req, res) => {
       pagination: {
         total,
         pages: Math.ceil(total / limit),
-        currentPage: page
+        currentPage: parseInt(page)
       }
     });
   } catch (error) {

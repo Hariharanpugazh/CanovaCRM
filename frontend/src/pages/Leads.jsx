@@ -30,10 +30,10 @@ const Leads = () => {
   const [statusModalData, setStatusModalData] = useState(null);
 
   // Fetch leads
-  const fetchLeads = async (page = 1) => {
+  const fetchLeads = async (page = 1, search = searchQuery) => {
     try {
       setLoading(true);
-      const response = await leadsAPI.getAll(page, 10, {});
+      const response = await leadsAPI.getAll(page, 10, { search });
       setLeads(response.data.leads || []);
       setTotalPages(response.data.pagination?.pages || response.data.totalPages || 1);
       setCurrentPage(page);
@@ -47,8 +47,12 @@ const Leads = () => {
   };
 
   useEffect(() => {
-    fetchLeads(1);
-  }, []);
+    const delayDebounceFn = setTimeout(() => {
+      fetchLeads(1, searchQuery);
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
 
   // Handle Add Lead form submit
   const handleAddLead = async (e) => {
@@ -246,14 +250,17 @@ const Leads = () => {
         {/* Pagination outside the white wrapper */}
         {!loading && leads.length > 0 && (
           <div className="pagination">
-            <button
-              className="pagination-btn"
-              onClick={() => fetchLeads(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-              <span>Previous</span>
-            </button>
+            <div className="pagination-left">
+              <button
+                className="pagination-btn"
+                onClick={() => fetchLeads(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                <span>Previous</span>
+              </button>
+            </div>
+            
             <div className="pagination-numbers">
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                 <button
@@ -265,14 +272,17 @@ const Leads = () => {
                 </button>
               ))}
             </div>
-            <button
-              className="pagination-btn"
-              onClick={() => fetchLeads(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage === totalPages}
-            >
-              <span>Next</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </button>
+
+            <div className="pagination-right">
+              <button
+                className="pagination-btn"
+                onClick={() => fetchLeads(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+              >
+                <span>Next</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -401,54 +411,56 @@ const Leads = () => {
 
               {!csvUploading ? (
                 <div className="csv-upload-area">
-                  <img src={uploadIcon} alt="Upload" width="60" height="60" />
-                  <p>Drag your files to start uploading</p>
-                  <p className="csv-or-divider">OR</p>
-                  <label className="csv-upload-btn">
-                    Browse files
-                    <input
-                      type="file"
-                      accept=".csv"
-                      onChange={handleCSVFileChange}
-                      style={{ display: 'none' }}
-                    />
-                  </label>
-                  <p className="csv-hint">
-                    <a href="/src/data/leads_sample.csv" download="leads_sample.csv" style={{ color: '#999', textDecoration: 'none' }}>
-                      Sample File.csv
+                  <div className="csv-upload-main">
+                    <img src={uploadIcon} alt="Upload" className="csv-icon" />
+                    <p className="csv-drag-text">Drag your file(s) to start uploading</p>
+                    <div className="csv-divider">
+                      <span>OR</span>
+                    </div>
+                    <label className="csv-browse-btn">
+                      Browse files
+                      <input
+                        type="file"
+                        accept=".csv"
+                        onChange={handleCSVFileChange}
+                        style={{ display: 'none' }}
+                      />
+                    </label>
+                  </div>
+                  
+                  <div className="csv-file-box">
+                    <span className="csv-file-name">{csvFile ? csvFile.name : 'Sample File.csv'}</span>
+                    <a href="/src/data/leads_sample.csv" download="leads_sample.csv" className="csv-download-icon">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     </a>
-                  </p>
+                  </div>
                 </div>
               ) : (
-                <div className="csv-uploading">
-                  <div className="csv-progress-circle">
-                    <div className="csv-progress-text">{csvProgress}%</div>
+                <div className="csv-uploading-container">
+                  <div className="csv-progress-wrapper">
+                    <svg className="csv-progress-svg" viewBox="0 0 100 100">
+                      <circle className="csv-progress-bg" cx="50" cy="50" r="45" />
+                      <circle 
+                        className="csv-progress-bar" 
+                        cx="50" 
+                        cy="50" 
+                        r="45" 
+                        style={{ 
+                          strokeDasharray: '283', 
+                          strokeDashoffset: (283 - (283 * csvProgress) / 100) 
+                        }} 
+                      />
+                    </svg>
+                    <div className="csv-progress-percentage">{Math.round(csvProgress)}%</div>
                   </div>
-                  <p className="csv-verifying">Verifying...</p>
+                  <p className="csv-verifying-text">Verifying...</p>
+                  <button className="csv-cancel-btn" onClick={() => { setCsvUploading(false); setCsvProgress(0); }}>Cancel</button>
                 </div>
               )}
 
-              {csvFile && !csvUploading && (
-                <div className="csv-file-selected">
-                  <p>✓ {csvFile.name} selected</p>
-                </div>
-              )}
-
-              <div className="csv-format-info">
-                <h4>CSV Format (Required Columns):</h4>
-                <ul>
-                  <li>Name</li>
-                  <li>Email</li>
-                  <li>Source</li>
-                  <li>Date</li>
-                  <li>Location</li>
-                  <li>Language</li>
-                </ul>
-              </div>
-
-              <div className="modal-actions">
+              <div className="modal-actions-csv">
                 <button
-                  className="btn btn-secondary"
+                  className="btn-modal-cancel"
                   onClick={() => {
                     setShowCSVModal(false);
                     setCsvFile(null);
@@ -459,11 +471,16 @@ const Leads = () => {
                   Cancel
                 </button>
                 <button
-                  className="btn btn-save"
+                  className={`btn-modal-next ${csvFile ? 'active' : ''}`}
                   onClick={handleCSVUpload}
                   disabled={csvUploading || !csvFile}
                 >
-                  {csvUploading ? 'Uploading...' : 'Upload'}
+                  {csvUploading ? 'Upload' : (
+                    <>
+                      <span>Next</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
