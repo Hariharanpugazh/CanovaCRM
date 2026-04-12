@@ -21,6 +21,7 @@ const Employees = () => {
     location: '',
     languages: ''
   });
+  const [showLangTooltip, setShowLangTooltip] = useState(false);
   const [menuOpen, setMenuOpen] = useState(null);
 
   // Fetch employees
@@ -48,10 +49,38 @@ const Employees = () => {
   // Handle form change
   const handleFormChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // Special handling for languages field
+    if (name === 'languages') {
+      // Split by comma but preserve the trailing comma if it exists
+      const hasTrailingComma = value.endsWith(',');
+      const parts = value.split(',');
+      
+      // Format each part (except the last empty one if there's a trailing comma)
+      let formatted = parts
+        .map(lang => {
+          const trimmed = lang.trim();
+          if (trimmed.length === 0) return '';
+          return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
+        })
+        .filter((lang, index) => {
+          // Keep all non-empty parts and keep empty parts only if it's the last one and there's a trailing comma
+          if (lang) return true;
+          if (index === parts.length - 1 && hasTrailingComma) return true;
+          return false;
+        })
+        .join(',');
+      
+      setFormData(prev => ({
+        ...prev,
+        [name]: formatted
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   // Handle add employee
@@ -64,7 +93,7 @@ const Employees = () => {
       const payload = {
         name: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
-        languages: formData.languages ? [formData.languages] : [],
+        languages: formData.languages ? formData.languages.split(',').map(lang => lang.trim()).filter(lang => lang) : [],
         location: formData.location
       };
 
@@ -97,7 +126,7 @@ const Employees = () => {
       const payload = {
         name: formData.name,
         status: formData.status,
-        languages: formData.languages ? [formData.languages] : []
+        languages: formData.languages ? formData.languages.split(',').map(lang => lang.trim()).filter(lang => lang) : []
       };
 
       await employeeAPI.update(editingEmployee._id, payload);
@@ -172,7 +201,7 @@ const Employees = () => {
       lastName: employee.name.split(' ').slice(1).join(' '),
       email: employee.email,
       location: employee.location || '',
-      languages: employee.languages?.[0] || '',
+      languages: employee.languages?.join(', ') || '',
       status: employee.status
     });
     setShowEditModal(true);
@@ -397,72 +426,81 @@ const Employees = () => {
               <h2>Add New Employee</h2>
               <button className="modal-close" onClick={() => setShowAddModal(false)}>✕</button>
             </div>
-            <form onSubmit={handleAddEmployee} className="modal-body">
-              <div className="form-group">
-                <label>First name</label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleFormChange}
-                  placeholder="Sarthak"
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Last name</label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleFormChange}
-                  placeholder="Pal"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleFormChange}
-                  placeholder="Sarthakpal08@gmail.com"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Location</label>
-                <input
-                  type="text"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleFormChange}
-                  placeholder="Karnataka"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Preferred Language</label>
-                <div style={{ position: 'relative' }}>
-                  <select
-                    name="languages"
-                    value={formData.languages}
+            <form onSubmit={handleAddEmployee}>
+              <div className="modal-body">
+                <div className="form-group">
+                  <label>First name</label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
                     onChange={handleFormChange}
-                  >
-                    <option value="">Tamil</option>
-                    <option value="Marathi">Marathi</option>
-                    <option value="Kannada">Kannada</option>
-                    <option value="Hindi">Hindi</option>
-                    <option value="English">English</option>
-                    <option value="Bengali">Bengali</option>
-                  </select>
-                  <span style={{ position: 'absolute', right: '40px', top: '50%', transform: 'translateY(-50%)', color: '#999', fontSize: '14px' }}>ⓘ</span>
+                    placeholder="Sarthak"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Last name</label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleFormChange}
+                    placeholder="Pal"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleFormChange}
+                    placeholder="Sarthakpal08@gmail.com"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Location</label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleFormChange}
+                    placeholder="Karnataka"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Preferred Language</label>
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      name="languages"
+                      value={formData.languages}
+                      onChange={handleFormChange}
+                      placeholder="Tamil,English"
+                      className="lang-input"
+                    />
+                    <span 
+                      className="info-icon"
+                      onMouseEnter={() => setShowLangTooltip(true)}
+                      onMouseLeave={() => setShowLangTooltip(false)}
+                      style={{ position: 'absolute', right: '-25px' }}
+                    >
+                      ⓘ
+                    </span>
+                    {showLangTooltip && (
+                      <div className="lang-tooltip">
+                        Note: Enter languages separated by commas with first letter capitalized and no spaces (e.g.: Tamil,English,Hindi).
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-
               <div className="modal-footer">
                 <button
                   type="submit"
@@ -485,47 +523,58 @@ const Employees = () => {
               <h2>Edit Employee</h2>
               <button className="modal-close" onClick={() => setShowEditModal(false)}>✕</button>
             </div>
-            <form onSubmit={handleEditEmployee} className="modal-body">
-              <div className="form-group">
-                <label>Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleFormChange}
-                  placeholder="Full name"
-                  required
-                />
-              </div>
+            <form onSubmit={handleEditEmployee}>
+              <div className="modal-body">
+                <div className="form-group">
+                  <label>Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleFormChange}
+                    placeholder="Full name"
+                    required
+                  />
+                </div>
 
-              <div className="form-group">
-                <label>Status</label>
-                <select
-                  name="status"
-                  value={formData.status || 'Active'}
-                  onChange={handleFormChange}
-                >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
-              </div>
+                <div className="form-group">
+                  <label>Status</label>
+                  <select
+                    name="status"
+                    value={formData.status || 'Active'}
+                    onChange={handleFormChange}
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
+                </div>
 
-              <div className="form-group">
-                <label>Preferred Language</label>
-                <select
-                  name="languages"
-                  value={formData.languages}
-                  onChange={handleFormChange}
-                >
-                  <option value="">Select a language</option>
-                  <option value="Marathi">Marathi</option>
-                  <option value="Kannada">Kannada</option>
-                  <option value="Hindi">Hindi</option>
-                  <option value="English">English</option>
-                  <option value="Bengali">Bengali</option>
-                </select>
+                <div className="form-group">
+                  <label>Preferred Language</label>
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      name="languages"
+                      value={formData.languages}
+                      onChange={handleFormChange}
+                      placeholder="Tamil,English,Hindi"
+                    />
+                    <span 
+                      className="info-icon"
+                      onMouseEnter={() => setShowLangTooltip(true)}
+                      onMouseLeave={() => setShowLangTooltip(false)}
+                      style={{ position: 'absolute', right: '-25px' }}
+                    >
+                      ⓘ
+                    </span>
+                    {showLangTooltip && (
+                      <div className="lang-tooltip">
+                        Note: Enter languages separated by commas with first letter capitalized and no spaces (e.g.: Tamil,English,Hindi).
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-
               <div className="modal-footer">
                 <button
                   type="submit"

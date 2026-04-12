@@ -78,15 +78,6 @@ export const validateCSVRow = (row) => {
     };
   }
 
-  // Validate language
-  const validLanguages = ['Marathi', 'Kannada', 'Hindi', 'English', 'Bengali'];
-  if (!validLanguages.includes(row.language)) {
-    return {
-      valid: false,
-      error: `Invalid language. Allowed: ${validLanguages.join(', ')}`
-    };
-  }
-
   return { valid: true };
 };
 

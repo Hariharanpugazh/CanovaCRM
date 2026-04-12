@@ -21,13 +21,15 @@ const Leads = () => {
     source: '',
     date: '',
     location: '',
-    language: 'English'
+    language: ''
   });
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [editingLead, setEditingLead] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [statusModalData, setStatusModalData] = useState(null);
+  const [modalError, setModalError] = useState('');
+  const [csvModalError, setCsvModalError] = useState('');
 
   // Fetch leads
   const fetchLeads = async (page = 1, search = searchQuery) => {
@@ -59,6 +61,7 @@ const Leads = () => {
     e.preventDefault();
     try {
       setLoading(true);
+      setModalError('');
       const leadData = {
         ...formData,
         date: new Date(formData.date).toISOString()
@@ -71,13 +74,13 @@ const Leads = () => {
         source: '',
         date: '',
         location: '',
-        language: 'English'
+        language: ''
       });
       setShowAddModal(false);
       fetchLeads(1);
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to create lead');
+      setModalError(err.response?.data?.error || 'Failed to create lead');
     } finally {
       setLoading(false);
     }
@@ -97,13 +100,14 @@ const Leads = () => {
 
   const handleCSVUpload = async () => {
     if (!csvFile) {
-      setError('Please select a CSV file');
+      setCsvModalError('Please select a CSV file');
       return;
     }
 
     try {
       setCsvUploading(true);
       setCsvProgress(0);
+      setCsvModalError('');
 
       // Simulate progress
       const progressInterval = setInterval(() => {
@@ -126,7 +130,7 @@ const Leads = () => {
       fetchLeads(1);
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to upload CSV');
+      setCsvModalError(err.response?.data?.error || 'Failed to upload CSV');
       setCsvUploading(false);
       setCsvProgress(0);
     }
@@ -142,6 +146,37 @@ const Leads = () => {
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to update lead');
+    }
+  };
+
+  // Handle form change with language formatting
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    
+    // Special handling for language field
+    if (name === 'language') {
+      // Remove all spaces and capitalize first letter of each language
+      const hasTrailingComma = value.endsWith(',');
+      const parts = value.split(',');
+      
+      // Format each part
+      let formatted = parts
+        .map(lang => {
+          const trimmed = lang.trim();
+          if (trimmed.length === 0) return '';
+          return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
+        })
+        .filter((lang, index) => {
+          // Keep all non-empty parts and keep empty parts only if it's the last one and there's a trailing comma
+          if (lang) return true;
+          if (index === parts.length - 1 && hasTrailingComma) return true;
+          return false;
+        })
+        .join(',');
+      
+      setFormData({ ...formData, [name]: formatted });
+    } else {
+      setFormData({ ...formData, [name]: value });
     }
   };
 
@@ -190,13 +225,13 @@ const Leads = () => {
           <div className="leads-actions">
             <button
               className="btn btn-secondary"
-              onClick={() => setShowAddModal(true)}
+              onClick={() => { setShowAddModal(true); setModalError(''); }}
             >
               Add Manually
             </button>
             <button
               className="btn btn-secondary"
-              onClick={() => setShowCSVModal(true)}
+              onClick={() => { setShowCSVModal(true); setCsvModalError(''); }}
             >
               Add CSV
             </button>
@@ -291,17 +326,18 @@ const Leads = () => {
 
       {/* Manual Add Lead Modal */}
       {showAddModal && (
-        <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
+        <div className="modal-overlay" onClick={() => { setShowAddModal(false); setModalError(''); }}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Add New Lead</h2>
               <button
                 className="modal-close"
-                onClick={() => setShowAddModal(false)}
+                onClick={() => { setShowAddModal(false); setModalError(''); }}
               >
                 ✕
               </button>
             </div>
+            {modalError && <div className="error-banner" style={{ margin: '12px 20px 0 20px', marginBottom: '12px' }}>{modalError}</div>}
             <form onSubmit={handleAddLead} className="modal-body">
               <div className="form-group">
                 <label>Name</label>
@@ -371,20 +407,14 @@ const Leads = () => {
               </div>
               <div className="form-group">
                 <label>Preferred Language</label>
-                <select
+                <input
+                  type="text"
+                  name="language"
                   value={formData.language}
-                  onChange={(e) =>
-                    setFormData({ ...formData, language: e.target.value })
-                  }
+                  onChange={handleFormChange}
+                  placeholder="English,Hindi,Tamil"
                   required
-                >
-                  <option value="" disabled>Select language</option>
-                  <option value="English">English</option>
-                  <option value="Marathi">Marathi</option>
-                  <option value="Kannada">Kannada</option>
-                  <option value="Hindi">Hindi</option>
-                  <option value="Bengali">Bengali</option>
-                </select>
+                />
               </div>
 
               <button type="submit" className="btn btn-save" disabled={loading}>
@@ -397,17 +427,18 @@ const Leads = () => {
 
       {/* CSV Upload Modal */}
       {showCSVModal && (
-        <div className="modal-overlay" onClick={() => setShowCSVModal(false)}>
+        <div className="modal-overlay" onClick={() => { setShowCSVModal(false); setCsvModalError(''); }}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>CSV Upload</h2>
               <button
                 className="modal-close"
-                onClick={() => setShowCSVModal(false)}
+                onClick={() => { setShowCSVModal(false); setCsvModalError(''); }}
               >
                 ✕
               </button>
             </div>
+            {csvModalError && <div className="error-banner" style={{ margin: '12px 20px 0 20px', marginBottom: '12px' }}>{csvModalError}</div>}
             <div className="modal-body">
               <p className="csv-description">Add your documents here</p>
 

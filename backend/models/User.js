@@ -33,7 +33,7 @@ const UserSchema = new mongoose.Schema(
     },
     languages: [{
       type: String,
-      enum: ['Marathi', 'Kannada', 'Hindi', 'English', 'Bengali']
+      trim: true
     }],
     employeeId: {
       type: String,

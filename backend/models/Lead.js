@@ -30,7 +30,7 @@ const LeadSchema = new mongoose.Schema(
     language: {
       type: String,
       required: true,
-      enum: ['Marathi', 'Kannada', 'Hindi', 'English', 'Bengali']
+      trim: true
     },
     assignedTo: {
       type: mongoose.Schema.Types.ObjectId,

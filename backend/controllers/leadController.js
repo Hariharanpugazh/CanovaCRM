@@ -16,10 +16,14 @@ export const uploadCSVLeads = async (req, res) => {
       return res.status(400).json({ error: 'No valid leads found in CSV' });
     }
 
-    // Assign leads in batch
+    // Assign leads in batch (handles partial failures)
     const assignedLeads = await assignLeadsInBatch(leads);
 
-    // Insert all leads in parallel
+    if (assignedLeads.length === 0) {
+      return res.status(400).json({ error: 'No leads could be assigned. Please ensure you have active users with matching languages.' });
+    }
+
+    // Insert all successfully assigned leads in parallel
     const createdLeads = await Promise.all(
       assignedLeads.map(lead => new Lead(lead).save())
     );

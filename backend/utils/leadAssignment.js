@@ -7,15 +7,25 @@ import Lead from '../models/Lead.js';
  */
 export const assignLeadToUser = async (language) => {
   try {
-    // Get all active users with this language
+    // Parse comma-separated languages
+    const languages = language
+      .split(',')
+      .map(lang => lang.trim())
+      .filter(lang => lang);
+
+    if (languages.length === 0) {
+      throw new Error('No valid languages provided');
+    }
+
+    // Get all active users with any of these languages
     const eligibleUsers = await User.find({
-      languages: language,
+      languages: { $in: languages },
       status: 'Active',
       role: 'SalesUser'
     });
 
     if (eligibleUsers.length === 0) {
-      throw new Error(`No active users found for language: ${language}`);
+      throw new Error(`No active users found for languages: ${language}`);
     }
 
     // Get assigned lead count for each user
@@ -45,19 +55,40 @@ export const assignLeadToUser = async (language) => {
 };
 
 /**
- * Assign multiple leads in parallel
+ * Assign multiple leads in parallel with error handling per lead
  */
 export const assignLeadsInBatch = async (leads) => {
   try {
     const assignmentPromises = leads.map(async (lead) => {
-      const userId = await assignLeadToUser(lead.language);
-      return {
-        ...lead,
-        assignedTo: userId
-      };
+      try {
+        const userId = await assignLeadToUser(lead.language);
+        return {
+          ...lead,
+          assignedTo: userId,
+          error: null
+        };
+      } catch (error) {
+        // Return lead with error instead of throwing
+        return {
+          ...lead,
+          error: error.message
+        };
+      }
     });
 
-    return await Promise.all(assignmentPromises);
+    const results = await Promise.all(assignmentPromises);
+    
+    // Check if all leads failed
+    const failedLeads = results.filter(r => r.error);
+    const successfulLeads = results.filter(r => !r.error);
+
+    if (successfulLeads.length === 0 && failedLeads.length > 0) {
+      // All leads failed - return the first error
+      throw new Error(failedLeads[0].error);
+    }
+
+    // Return only successful leads for saving
+    return successfulLeads;
   } catch (error) {
     throw new Error(`Batch lead assignment failed: ${error.message}`);
   }
