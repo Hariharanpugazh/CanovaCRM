@@ -91,14 +91,21 @@ export const updateLeadStatus = async (req, res) => {
     const { id } = req.params;
     const { status, type, scheduledDate } = req.body;
 
+    // Build update object based on what was actually changed
+    const updateData = { updatedAt: new Date() };
+    if (status) updateData.status = status;
+    if (type) updateData.type = type;
+    
+    // Explicitly handle scheduledDate (allow null if type changes away from Scheduled)
+    if (type === 'Scheduled') {
+      updateData.scheduledDate = scheduledDate ? new Date(scheduledDate) : null;
+    } else if (type) {
+      updateData.scheduledDate = null;
+    }
+
     const lead = await Lead.findByIdAndUpdate(
       id,
-      {
-        status: status || undefined,
-        type: type || undefined,
-        scheduledDate: (type === 'Scheduled' && scheduledDate) ? new Date(scheduledDate) : undefined,
-        updatedAt: new Date()
-      },
+      updateData,
       { new: true }
     );
 

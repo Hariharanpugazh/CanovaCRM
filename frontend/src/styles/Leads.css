@@ -121,6 +121,18 @@
   transform: translateY(-1px);
 }
 
+.btn-save {
+  background-color: #d8d8d8;
+  color: #333;
+  border: none;
+  padding: 8px 40px; /* Thinner padding */
+  border-radius: 10px;
+  font-weight: 600;
+  margin-top: 8px; /* Compact margin */
+  width: 100%; /* Full width for easier visibility */
+  display: block;
+}
+
 /* Table Wrapper and Styles */
 .leads-table-wrapper {
   background: #fff;
@@ -259,42 +271,44 @@
   font-size: 14px;
 }
 
-/* Modal Styles and Others */
+/* Modal Styles - Final Compact Adjustment */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: center; /* Center vertically */
   z-index: 1000;
 }
 
 .modal {
   background: white;
   border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  max-width: 600px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  max-width: 380px; /* Smarter width */
   width: 90%;
-  max-height: 85vh;
-  overflow-y: auto;
+  max-height: 90vh; /* Scaled down max height */
+  overflow: hidden; 
   border: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px;
-  border-bottom: 1px solid #ccc;
+  padding: 10px 20px; /* Tighter header */
+  border-bottom: none;
 }
 
 .modal-header h2 {
   margin: 0;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
   color: #000;
 }
@@ -302,66 +316,255 @@
 .modal-close {
   background: none;
   border: none;
-  font-size: 18px;
+  font-size: 14px;
   color: #000;
   cursor: pointer;
   padding: 0;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  opacity: 0.7;
 }
 
 .modal-body {
-  padding: 18px;
+  padding: 0 20px 15px 20px;
+  overflow-y: auto; /* Re-enable internal scroll ONLY if necessary */
+  scrollbar-width: none; /* Hide scrollbar for cleaner look */
 }
 
-.form-group {
-  margin-bottom: 15px;
+.modal-body::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome/Safari */
 }
 
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
+/* Super compact form groups */
+.modal-body .form-group {
+  margin-bottom: 6px; 
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 2px;
   font-weight: 500;
-  color: #000;
-  font-size: 12px;
+  color: #666;
+  font-size: 11px; /* Smaller label */
 }
 
 .form-group input, .form-group select {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 13px;
+  padding: 6px 10px; /* Ultra-thin padding */
+  border: 1px solid #999;
+  border-radius: 8px;
+  font-size: 12px;
   background: white;
   color: #333;
+  outline: none;
+}
+
+.form-group input::placeholder {
+  color: #bbb;
 }
 
 .form-group input:focus, .form-group select:focus {
-  outline: none;
-  border-color: #999;
+  border-color: #333;
 }
 
 .csv-upload-area {
   border: 2px dashed #999;
-  padding: 35px 20px;
+  padding: 50px 20px;
   text-align: center;
   background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  min-height: 280px;
+  justify-content: center;
+}
+
+.csv-upload-area img {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 8px;
+}
+
+.csv-upload-area p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.csv-or-divider {
+  color: #999;
+  font-size: 13px;
+  margin: 12px 0;
+}
+
+.csv-upload-btn {
+  display: inline-block;
+  padding: 8px 24px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: white;
+  color: #333;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 8px 0;
+}
+
+.csv-upload-btn:hover {
+  background: #f5f5f5;
+  border-color: #000;
+}
+
+.csv-hint {
+  margin-top: 16px;
+  font-size: 13px;
+  color: #999;
+}
+
+.csv-hint a {
+  color: #999;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.csv-hint a:hover {
+  text-decoration: underline;
+  color: #666;
+}
+
+.csv-uploading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  gap: 16px;
+  padding: 40px 20px;
+}
+
+.csv-progress-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 4px solid #f0f0f0;
+  border-top: 4px solid #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: spin 1s linear infinite;
+  position: relative;
+}
+
+.csv-progress-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.csv-verifying {
+  font-size: 14px;
+  color: #666;
+  margin-top: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.csv-file-selected {
+  padding: 12px;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.csv-file-selected p {
+  margin: 0;
+  font-size: 13px;
+  color: #333;
+}
+
+.csv-format-info {
+  margin-top: 16px;
+  padding: 12px;
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  text-align: left;
+}
+
+.csv-format-info h4 {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+}
+
+.csv-format-info ul {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 12px;
+  color: #666;
+}
+
+.csv-format-info li {
+  margin: 4px 0;
+}
+
+.csv-description {
+  margin: 0 0 16px 0;
+  font-size: 13px;
+  color: #666;
 }
 
 .modal-actions {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   justify-content: flex-end;
-  margin-top: 12px;
+  margin-top: 20px;
+}
+
+.btn-secondary {
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #999;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #e8e8e8;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-save {
+  background-color: #001820;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-save:hover:not(:disabled) {
+  background-color: #002a38;
+}
+
+.btn-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 @media (max-width: 768px) {

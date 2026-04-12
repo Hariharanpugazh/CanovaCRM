@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { leadsAPI } from '../utils/apiClient';
+import uploadIcon from '../assets/upload.svg';
 import '../styles/Leads.css';
 
 const Leads = () => {
@@ -290,87 +291,91 @@ const Leads = () => {
               </button>
             </div>
             <form onSubmit={handleAddLead} className="modal-body">
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Name</label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Email</label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    required
-                  />
-                </div>
+              <div className="form-group">
+                <label>Name</label>
+                <input
+                  type="text"
+                  placeholder="Sarthak Pal"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  placeholder="Sarthakpal08@gmail.com"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  required
+                />
               </div>
 
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Source</label>
-                  <input
-                    type="text"
-                    value={formData.source}
-                    onChange={(e) =>
-                      setFormData({ ...formData, source: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Date</label>
-                  <input
-                    type="date"
-                    value={formData.date}
-                    onChange={(e) =>
-                      setFormData({ ...formData, date: e.target.value })
-                    }
-                    required
-                  />
-                </div>
+              <div className="form-group">
+                <label>Source</label>
+                <input
+                  type="text"
+                  placeholder="Referral"
+                  value={formData.source}
+                  onChange={(e) =>
+                    setFormData({ ...formData, source: e.target.value })
+                  }
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Date</label>
+                <input
+                  type="text"
+                  placeholder="12/10/25"
+                  onFocus={(e) => (e.target.type = 'date')}
+                  onBlur={(e) => {
+                    if (!e.target.value) e.target.type = 'text';
+                  }}
+                  value={formData.date}
+                  onChange={(e) =>
+                    setFormData({ ...formData, date: e.target.value })
+                  }
+                  required
+                />
               </div>
 
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Location</label>
-                  <input
-                    type="text"
-                    value={formData.location}
-                    onChange={(e) =>
-                      setFormData({ ...formData, location: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Preferred Language</label>
-                  <select
-                    value={formData.language}
-                    onChange={(e) =>
-                      setFormData({ ...formData, language: e.target.value })
-                    }
-                    required
-                  >
-                    <option value="English">English</option>
-                    <option value="Marathi">Marathi</option>
-                    <option value="Kannada">Kannada</option>
-                    <option value="Hindi">Hindi</option>
-                    <option value="Bengali">Bengali</option>
-                  </select>
-                </div>
+              <div className="form-group">
+                <label>Location</label>
+                <input
+                  type="text"
+                  placeholder="Mumbai"
+                  value={formData.location}
+                  onChange={(e) =>
+                    setFormData({ ...formData, location: e.target.value })
+                  }
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Preferred Language</label>
+                <select
+                  value={formData.language}
+                  onChange={(e) =>
+                    setFormData({ ...formData, language: e.target.value })
+                  }
+                  required
+                >
+                  <option value="" disabled>Select language</option>
+                  <option value="English">English</option>
+                  <option value="Marathi">Marathi</option>
+                  <option value="Kannada">Kannada</option>
+                  <option value="Hindi">Hindi</option>
+                  <option value="Bengali">Bengali</option>
+                </select>
               </div>
 
-              <button type="submit" className="btn btn-primary" disabled={loading}>
+              <button type="submit" className="btn btn-save" disabled={loading}>
                 {loading ? 'Creating...' : 'Save'}
               </button>
             </form>
@@ -396,14 +401,11 @@ const Leads = () => {
 
               {!csvUploading ? (
                 <div className="csv-upload-area">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#666">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="17 8 12 3 7 8"></polyline>
-                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                  </svg>
-                  <p>Drag your files here</p>
+                  <img src={uploadIcon} alt="Upload" width="60" height="60" />
+                  <p>Drag your files to start uploading</p>
+                  <p className="csv-or-divider">OR</p>
                   <label className="csv-upload-btn">
-                    Browse Files
+                    Browse files
                     <input
                       type="file"
                       accept=".csv"
@@ -411,12 +413,18 @@ const Leads = () => {
                       style={{ display: 'none' }}
                     />
                   </label>
-                  <p className="csv-hint">Sample File.csv</p>
+                  <p className="csv-hint">
+                    <a href="/src/data/leads_sample.csv" download="leads_sample.csv" style={{ color: '#999', textDecoration: 'none' }}>
+                      Sample File.csv
+                    </a>
+                  </p>
                 </div>
               ) : (
                 <div className="csv-uploading">
-                  <div className="spinner"></div>
-                  <p>Verifying...</p>
+                  <div className="csv-progress-circle">
+                    <div className="csv-progress-text">{csvProgress}%</div>
+                  </div>
+                  <p className="csv-verifying">Verifying...</p>
                 </div>
               )}
 
@@ -440,17 +448,18 @@ const Leads = () => {
 
               <div className="modal-actions">
                 <button
-                  className="btn btn-ghost"
+                  className="btn btn-secondary"
                   onClick={() => {
                     setShowCSVModal(false);
                     setCsvFile(null);
+                    setCsvProgress(0);
                   }}
                   disabled={csvUploading}
                 >
                   Cancel
                 </button>
                 <button
-                  className="btn btn-primary"
+                  className="btn btn-save"
                   onClick={handleCSVUpload}
                   disabled={csvUploading || !csvFile}
                 >
@@ -482,11 +491,10 @@ const Leads = () => {
               <div className="form-group">
                 <label>Status</label>
                 <select
-                  defaultValue={statusModalData.status}
+                  value={statusModalData.status}
                   onChange={(e) => {
-                    handleUpdateStatus(statusModalData._id, {
-                      status: e.target.value
-                    });
+                    const newStatus = e.target.value;
+                    setStatusModalData({ ...statusModalData, status: newStatus });
                   }}
                 >
                   <option value="Ongoing">Ongoing</option>
@@ -498,11 +506,10 @@ const Leads = () => {
               <div className="form-group">
                 <label>Type</label>
                 <select
-                  defaultValue={statusModalData.type}
+                  value={statusModalData.type || 'Warm'}
                   onChange={(e) => {
-                    handleUpdateStatus(statusModalData._id, {
-                      type: e.target.value
-                    });
+                    const newType = e.target.value;
+                    setStatusModalData({ ...statusModalData, type: newType });
                   }}
                 >
                   <option value="Hot">Hot</option>
@@ -517,18 +524,9 @@ const Leads = () => {
                   <label>Scheduled Date</label>
                   <input
                     type="date"
-                    defaultValue={
-                      statusModalData.scheduledDate
-                        ? new Date(statusModalData.scheduledDate)
-                            .toISOString()
-                            .split('T')[0]
-                        : ''
-                    }
+                    value={statusModalData.scheduledDate ? new Date(statusModalData.scheduledDate).toISOString().split('T')[0] : ''}
                     onChange={(e) => {
-                      handleUpdateStatus(statusModalData._id, {
-                        type: 'Scheduled',
-                        scheduledDate: e.target.value
-                      });
+                      setStatusModalData({ ...statusModalData, scheduledDate: e.target.value });
                     }}
                   />
                 </div>
@@ -536,10 +534,22 @@ const Leads = () => {
 
               <div className="modal-actions">
                 <button
-                  className="btn btn-ghost"
+                  className="btn btn-secondary"
                   onClick={() => setStatusModalData(null)}
                 >
-                  Close
+                  Cancel
+                </button>
+                <button
+                  className="btn btn-save"
+                  onClick={() => {
+                    handleUpdateStatus(statusModalData._id, {
+                      status: statusModalData.status,
+                      type: statusModalData.type,
+                      scheduledDate: statusModalData.scheduledDate
+                    });
+                  }}
+                >
+                  Update
                 </button>
               </div>
             </div>
