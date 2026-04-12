@@ -11,6 +11,7 @@ const Dashboard = () => {
   const [graphData, setGraphData] = useState(null);
   const [activities, setActivities] = useState(null);
   const [salesPeople, setSalesPeople] = useState(null);
+  const [filteredSalesPeople, setFilteredSalesPeople] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,6 +19,16 @@ const Dashboard = () => {
   useEffect(() => {
     fetchDashboardData();
   }, []);
+
+  useEffect(() => {
+    if (salesPeople) {
+      const filtered = salesPeople.filter(person =>
+        person.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        person.employeeId.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredSalesPeople(filtered);
+    }
+  }, [searchQuery, salesPeople]);
 
   const fetchDashboardData = async () => {
     try {
@@ -35,6 +46,7 @@ const Dashboard = () => {
       setGraphData(graphRes.data.data);
       setActivities(activitiesRes.data.activities);
       setSalesPeople(salesPeopleRes.data.salesPeople);
+      setFilteredSalesPeople(salesPeopleRes.data.salesPeople);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to load dashboard');
       console.error('Dashboard error:', err);
@@ -129,9 +141,9 @@ const Dashboard = () => {
       </div>
 
       {/* Sales People Table */}
-      <div className="sales-people-container">
+      <div className="sales-people-list-wrapper">
         <h2 className="section-title">Active Sales People</h2>
-        {salesPeople && <SalesPeopleList salesPeople={salesPeople} />}
+        {filteredSalesPeople && <SalesPeopleList salesPeople={filteredSalesPeople} />}
       </div>
     </div>
   );

@@ -1,101 +1,104 @@
-.sales-people-container {
-  display: flex;
-  flex-direction: column;
+.sales-people-list-scroll {
   max-height: 400px;
   overflow-y: auto;
-  border-radius: 8px;
-}
-
-.sales-people-container::-webkit-scrollbar {
-  width: 6px;
-}
-
-.sales-people-container::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
-}
-
-.sales-people-container::-webkit-scrollbar-thumb {
-  background: #bbb;
-  border-radius: 3px;
-}
-
-.sales-people-container::-webkit-scrollbar-thumb:hover {
-  background: #888;
 }
 
 .sales-people-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: white;
-}
-
-.sales-people-table thead {
-  background-color: #f9f9f9;
-  position: sticky;
-  top: 0;
 }
 
 .sales-people-table th {
-  padding: 12px;
   text-align: left;
-  font-weight: 600;
+  padding: 16px;
   font-size: 13px;
+  font-weight: 500;
   color: #666;
-  border-bottom: 2px solid #e0e0e0;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .sales-people-table td {
-  padding: 12px;
-  border-bottom: 1px solid #f0f0f0;
-  font-size: 14px;
-  color: #333;
-}
-
-.sales-people-table tbody tr:hover {
-  background-color: #f9f9f9;
+  padding: 16px;
+  border-bottom: 1px solid #f9f9f9;
+  vertical-align: middle;
 }
 
 .name-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  background-color: #ffe0da;
+  color: #c45d48;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.person-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.full-name {
+  font-size: 14px;
   font-weight: 600;
   color: #333;
 }
 
-.status-badge {
-  display: inline-block;
+.email {
+  font-size: 12px;
+  color: #888;
+}
+
+.employee-id-badge {
+  background-color: #efefef;
   padding: 6px 12px;
   border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+  border: 1px solid #ddd;
+}
+
+.center-cell {
+  text-align: center;
+  font-weight: 500;
+  color: #555;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
+  background-color: #e8f5ed;
+  color: #2e7d32;
 }
 
-.status-active {
-  background-color: #d4edda;
-  color: #155724;
+.status-dot {
+  width: 6px;
+  height: 6px;
+  background-color: #2e7d32;
+  border-radius: 50%;
 }
 
-.status-inactive {
-  background-color: #f8d7da;
-  color: #721c24;
+.th-assigned, .th-closed {
+  text-align: center !important;
 }
 
-.empty-state {
-  padding: 40px 20px;
-  text-align: center;
-  color: #999;
-  font-size: 14px;
+.th-id {
+  padding-left: 24px !important;
 }
 
-@media (max-width: 768px) {
-  .sales-people-container {
-    max-height: 300px;
-  }
-
-  .sales-people-table th,
-  .sales-people-table td {
-    padding: 8px;
-    font-size: 12px;
-  }
 }

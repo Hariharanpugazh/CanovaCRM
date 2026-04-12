@@ -20,16 +20,16 @@ const ActivityFeed = ({ activities }) => {
   return (
     <div className="activity-feed">
       {activities && activities.length > 0 ? (
-        <div className="activity-list">
+        <ul className="activity-list">
           {activities.map((activity) => (
-            <div key={activity._id} className="activity-item">
-              <div className="activity-content">
-                <p className="activity-description">{activity.description}</p>
-                <span className="activity-time">{formatTime(activity.createdAt)}</span>
-              </div>
-            </div>
+            <li key={activity._id} className="activity-item">
+              <span className="dot"></span>
+              <p className="activity-text">
+                {activity.description} – <span className="time">{formatTime(activity.createdAt)}</span>
+              </p>
+            </li>
           ))}
-        </div>
+        </ul>
       ) : (
         <div className="empty-state">No activities yet</div>
       )}
