@@ -22,6 +22,8 @@ apiClient.interceptors.request.use((config) => {
 export const authAPI = {
   login: (email, password) => apiClient.post('/auth/login', { email, password }),
   logout: () => apiClient.post('/auth/logout'),
+  getCurrentUser: () => apiClient.get('/auth/me'),
+  updateProfile: (data) => apiClient.put('/auth/profile', data),
 };
 
 export const employeeAPI = {

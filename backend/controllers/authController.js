@@ -100,3 +100,48 @@ export const getCurrentUser = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const updateProfile = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const { name, email, password } = req.body;
+
+    // Validate inputs
+    if (!name || !email) {
+      return res.status(400).json({ error: 'Name and email are required' });
+    }
+
+    // Check if email is already taken by another user
+    const existingUser = await User.findOne({ email: email, _id: { $ne: req.user._id } });
+    if (existingUser) {
+      return res.status(409).json({ error: 'Email already in use' });
+    }
+
+    // Update user
+    req.user.name = name;
+    req.user.email = email;
+
+    // Update password if provided
+    if (password && password.length > 0) {
+      req.user.password = password; // Will be hashed by pre-save middleware
+    }
+
+    await req.user.save();
+
+    res.json({
+      message: 'Profile updated successfully',
+      user: {
+        _id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+        role: req.user.role,
+        status: req.user.status
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

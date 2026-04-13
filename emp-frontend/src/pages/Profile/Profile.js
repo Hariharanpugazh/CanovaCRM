@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import './Profile.css';
 import BottomNavigation from '../../components/BottomNavigation/BottomNavigation';
 import HeaderBanner from '../../components/HeaderBanner/HeaderBanner';
+import PasswordInput from '../../components/PasswordInput/PasswordInput';
+import { authAPI } from '../../utils/api';
 
 function Profile() {
   const navigate = useNavigate();
@@ -17,24 +19,38 @@ function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(true);
 
+  // Fetch user profile on component mount
   useEffect(() => {
-    // Load user data from localStorage
-    const userEmail = localStorage.getItem('userEmail');
-    const savedProfile = localStorage.getItem('userProfile');
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        const response = await authAPI.getCurrentUser();
+        const user = response.data.user;
 
-    if (savedProfile) {
-      setProfile(JSON.parse(savedProfile));
-    } else {
-      // Mock data if no saved profile
-      setProfile({
-        firstName: 'Rajesh',
-        lastName: 'Mehta',
-        email: userEmail || 'rajesh.mehta@example.com',
-        password: '••••••••',
-        confirmPassword: '••••••••',
-      });
-    }
+        // Split name into firstName and lastName
+        const nameParts = user.name.split(' ');
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+
+        setProfile({
+          firstName,
+          lastName,
+          email: user.email,
+          password: '',
+          confirmPassword: '',
+        });
+        setError('');
+      } catch (err) {
+        console.error('Failed to fetch profile:', err);
+        setError('Failed to load profile. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
   }, []);
 
   const handleInputChange = (e) => {
@@ -53,20 +69,38 @@ function Profile() {
       return;
     }
 
-    if (profile.password && profile.password !== profile.confirmPassword) {
+    if (profile.password !== profile.confirmPassword) {
       setError('Passwords do not match');
       return;
     }
 
     try {
-      // TODO: Update backend
-      // Mock save for now
-      localStorage.setItem('userProfile', JSON.stringify(profile));
-      setSuccess('Profile updated successfully');
+      // Combine firstName and lastName into name for backend
+      const updateData = {
+        name: `${profile.firstName} ${profile.lastName}`.trim(),
+        email: profile.email,
+      };
+
+      // Only include password if provided
+      if (profile.password && profile.password.length > 0) {
+        updateData.password = profile.password;
+      }
+
+      const response = await authAPI.updateProfile(updateData);
+      
+      setSuccess(response.data.message || 'Profile updated successfully');
       setIsEditing(false);
+      
+      // Clear password fields after successful save
+      setProfile((prev) => ({
+        ...prev,
+        password: '',
+        confirmPassword: '',
+      }));
+
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError(err.message || 'Failed to update profile');
+      setError(err.response?.data?.error || 'Failed to update profile');
     }
   };
 
@@ -76,6 +110,18 @@ function Profile() {
     localStorage.removeItem('userProfile');
     navigate('/login');
   };
+
+  if (loading) {
+    return (
+      <div className="profile-container">
+        <HeaderBanner title="Profile" showBack={true} />
+        <div className="profile-content">
+          <div className="loading">Loading profile...</div>
+        </div>
+        <BottomNavigation />
+      </div>
+    );
+  }
 
   return (
     <div className="profile-container">
@@ -124,8 +170,7 @@ function Profile() {
               id="email"
               name="email"
               value={profile.email}
-              onChange={handleInputChange}
-              disabled={!isEditing}
+              disabled={true}
               className="form-input"
             />
           </div>
@@ -134,27 +179,21 @@ function Profile() {
             <>
               <div className="form-group">
                 <label htmlFor="password">Password</label>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
+                <PasswordInput
                   value={profile.password}
                   onChange={handleInputChange}
-                  className="form-input"
                   placeholder="Enter new password (optional)"
+                  name="password"
                 />
               </div>
 
               <div className="form-group">
                 <label htmlFor="confirmPassword">Confirm Password</label>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  name="confirmPassword"
+                <PasswordInput
                   value={profile.confirmPassword}
                   onChange={handleInputChange}
-                  className="form-input"
                   placeholder="Confirm password"
+                  name="confirmPassword"
                 />
               </div>
             </>

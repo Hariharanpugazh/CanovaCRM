@@ -8,6 +8,7 @@ import Leads from './pages/Leads'
 import Employees from './pages/Employees'
 import './App.css'
 import Layout from './components/Layout'
+import PasswordInput from './components/PasswordInput/PasswordInput'
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -63,11 +64,11 @@ const LoginPage = () => {
           </div>
           <div className="form-group">
             <label>Password</label>
-            <input
-              type="password"
+            <PasswordInput
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
+              name="password"
             />
           </div>
           {error && <div className="error">{error}</div>}
