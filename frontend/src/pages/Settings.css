@@ -1,74 +1,101 @@
 .settings {
   flex: 1;
-  background-color: #f5f5f5;
-  padding: 24px;
-  overflow-y: auto;
+  background-color: #f3f3f3;
+  padding: 78px 26px 24px;
+  overflow-y: hidden;
 }
 
 .settings-content {
-  max-width: 800px;
+  width: 100%;
+  max-width: none;
   margin: 0 auto;
 }
 
-.settings-header {
-  margin-bottom: 32px;
+.settings-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #5f5f5f;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 18px;
 }
 
-.settings-header h1 {
-  font-size: 28px;
-  font-weight: 600;
-  color: #333;
+.settings-breadcrumb .breadcrumb-item.current {
+  color: #4f4f4f;
+}
+
+.settings-breadcrumb .breadcrumb-separator {
+  color: #808080;
+  line-height: 1;
 }
 
 .settings-card {
-  background: white;
+  background: #f5f5f5;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #bebebe;
+  box-shadow: none;
   overflow: hidden;
 }
 
 .card-header {
-  padding: 24px;
-  border-bottom: 1px solid #f0f0f0;
+  position: relative;
+  padding: 14px 14px 0;
+  border-bottom: none;
 }
 
 .card-header h2 {
-  font-size: 20px;
+  display: inline-block;
+  font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: #666;
   margin: 0;
+  padding: 0 12px 8px;
+  border-bottom: 2px solid #8b8b8b;
+}
+
+.card-header::after {
+  content: '';
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: -1px;
+  border-bottom: 1px solid #c7c7c7;
 }
 
 .settings-form {
-  padding: 24px;
+  padding: 18px 10px 16px;
 }
 
-.form-group {
-  margin-bottom: 24px;
+.settings .form-group {
+  margin: 0 0 14px;
+  width: 50%;
+  max-width: 100%;
 }
 
-.form-group label {
+.settings .form-group label {
   display: block;
   font-size: 14px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 8px;
+  font-weight: 500;
+  color: #5f5f5f;
+  margin-bottom: 6px;
 }
 
 .form-input {
   width: 100%;
-  padding: 12px;
+  padding: 10px 16px;
   font-size: 14px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  border: 1px solid #8e8e8e;
+  border-radius: 10px;
+  background: #f5f5f5;
   font-family: inherit;
-  transition: all 0.3s ease;
+  transition: border-color 0.2s ease;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  border-color: #707070;
+  box-shadow: none;
 }
 
 .form-input::placeholder {
@@ -78,8 +105,9 @@
 .message {
   padding: 12px 16px;
   border-radius: 8px;
-  margin-bottom: 16px;
+  margin: 10px 0 0;
   font-size: 14px;
+  max-width: 420px;
 }
 
 .message-success {
@@ -97,26 +125,32 @@
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 32px;
+  margin-top: 0;
 }
 
 .btn-save {
-  padding: 12px 32px;
-  background-color: #777;
-  color: white;
+  min-width: 142px;
+  padding: 11px 32px;
+  background-color: #c9c9c9;
+  color: #5b5b5b;
   font-size: 14px;
   font-weight: 600;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.2s ease;
+}
+
+.settings .form-actions .btn-save {
+  width: auto;
+  min-width: 130px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-save:hover:not(:disabled) {
-  background-color: #666;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: #bdbdbd;
 }
 
 .btn-save:disabled {
@@ -126,23 +160,31 @@
 
 @media (max-width: 768px) {
   .settings {
-    padding: 16px;
+    padding: 14px 14px 18px;
   }
 
-  .settings-header h1 {
-    font-size: 24px;
+  .settings-breadcrumb {
+    margin-bottom: 12px;
+    font-size: 13px;
   }
 
   .settings-card {
     border-radius: 8px;
   }
 
-  .card-header,
   .settings-form {
     padding: 16px;
   }
 
+  .card-header {
+    padding: 12px 12px 0;
+  }
+
+  .settings .form-group {
+    max-width: 100%;
+  }
+
   .form-actions {
-    justify-content: center;
+    margin-top: 28px;
   }
 }

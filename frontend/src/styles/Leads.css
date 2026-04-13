@@ -147,9 +147,11 @@
 .leads-table {
   width: 100%;
   border-collapse: separate;
-  border-spacing: 0;
+  border-spacing: 0 10px;
   font-size: 13px;
   background: #fff;
+  padding-right:12px;
+  padding-left: 12px;
 }
 
 .leads-table thead {
@@ -158,7 +160,7 @@
 }
 
 .leads-table th {
-  padding: 16px 12px;
+  /* padding: 16px 12px; */
   text-align: left;
   font-weight: 600;
   color: #666;
@@ -177,12 +179,26 @@
 }
 
 .leads-table td {
-  padding: 16px 12px;
+  /* padding: 12px 12px; */
   color: #333;
-  border-bottom: 1px solid #f0f0f0;
+  border-top: 1px solid #5a5a5a;
+  border-bottom: 1px solid #5a5a5a;
   word-break: break-word;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
+  background: #F7F7F7;
+}
+
+.leads-table tbody td:first-child {
+  border-left: 1px solid #5a5a5a;
+  border-radius: 14px 0 0 14px;
+  padding-left: 18px;
+}
+
+.leads-table tbody td:last-child {
+  border-right: 1px solid #5a5a5a;
+  border-radius: 0 14px 14px 0;
+  padding-right: 18px;
 }
 
 /* Pagination - Perfectly Centered with side buttons */
@@ -286,6 +302,11 @@
   z-index: 1000;
 }
 
+.leads-page .modal-overlay {
+  justify-content: center !important;
+  align-items: center !important;
+}
+
 .modal {
   background: white;
   border-radius: 12px;
@@ -297,6 +318,60 @@
   border: 1px solid #eee;
   display: flex;
   flex-direction: column;
+}
+
+.leads-page .modal {
+  margin: 0 auto !important;
+}
+
+/* Add Lead Modal (match reference) */
+.leads-add-modal {
+  width: 440px;
+  max-width: calc(100vw - 32px);
+  border-radius: 14px;
+}
+
+.leads-add-modal .modal-header {
+  padding: 16px 18px;
+}
+
+.leads-add-modal .modal-header h2 {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.leads-add-modal .modal-body {
+  padding: 0 18px 18px;
+}
+
+.leads-add-modal .form-group {
+  margin-bottom: 14px;
+}
+
+.leads-add-modal .form-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.leads-add-modal .form-group input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 13px;
+  border: 1px solid #999;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.leads-add-modal .btn-save {
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 34px;
+  border-radius: 12px;
+  margin-top: 6px;
 }
 
 .modal-header {

@@ -1,0 +1,336 @@
+.home-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bg-light);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.home-content {
+  flex: 1;
+  padding: var(--spacing-md);
+  padding-bottom: 100px; /* Space for bottom navigation */
+  overflow-y: auto;
+}
+
+/* Header */
+.home-header {
+  margin-bottom: var(--spacing-lg);
+}
+
+.header-greeting {
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  color: white;
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-lg);
+}
+
+.header-greeting h2 {
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--spacing-xs);
+}
+
+.user-name {
+  font-size: var(--font-size-sm);
+  opacity: 0.9;
+}
+
+/* Timings Card */
+.timings-card {
+  background: var(--bg-white);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  border: 1px solid var(--border-light);
+}
+
+.card-title {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  margin-bottom: var(--spacing-md);
+  color: var(--text-primary);
+}
+
+.timing-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.timing-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.timing-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.timing-time {
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  color: white;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  text-align: center;
+  font-weight: 600;
+  font-size: var(--font-size-base);
+}
+
+.timing-time.checked-in {
+  box-shadow: inset 0 0 0 2px rgba(16, 185, 129, 0.3);
+}
+
+.timing-item .btn {
+  width: 100%;
+  margin-top: auto;
+}
+
+.break-section {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-light);
+}
+
+.break-section .btn {
+  flex: 1;
+}
+
+.break-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: var(--danger-red);
+  font-weight: 500;
+}
+
+.indicator-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--danger-red);
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* Break Logs Card */
+.break-logs-card {
+  background: var(--bg-white);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  border: 1px solid var(--border-light);
+}
+
+.break-logs-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.break-log-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background: var(--bg-light);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-xs);
+}
+
+.break-log-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.break-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.break-time {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Activity Card */
+.activity-card {
+  background: var(--bg-white);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  border: 1px solid var(--border-light);
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.activity-item {
+  display: flex;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-bullet {
+  color: var(--primary-blue);
+  font-weight: bold;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-message {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.activity-time {
+  font-size: var(--font-size-xs);
+  color: var(--text-light);
+}
+
+/* Leads Preview Card */
+.leads-preview-card {
+  background: var(--bg-white);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  border: 1px solid var(--border-light);
+}
+
+.leads-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.view-all-btn {
+  background: none;
+  color: var(--primary-blue);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+.leads-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.lead-item {
+  padding: var(--spacing-sm);
+  background: var(--bg-light);
+  border-radius: var(--border-radius-md);
+}
+
+.lead-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xs);
+}
+
+.lead-name {
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+}
+
+.status-badge {
+  font-size: var(--font-size-xs);
+  padding: 2px 8px;
+  border-radius: var(--border-radius-full);
+  font-weight: 500;
+}
+
+.status-ongoing {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.status-closed {
+  background-color: #e5e7eb;
+  color: #4b5563;
+}
+
+.lead-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-size-xs);
+}
+
+.lead-email {
+  color: var(--text-secondary);
+}
+
+.type-badge {
+  padding: 2px 8px;
+  border-radius: var(--border-radius-full);
+  font-weight: 500;
+  font-size: var(--font-size-xs);
+}
+
+.type-hot {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.type-warm {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.type-cold {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+@media (max-width: 640px) {
+  .home-content {
+    padding: var(--spacing-sm);
+    padding-bottom: 100px;
+  }
+
+  .timing-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .break-log-item {
+    grid-template-columns: 1fr;
+  }
+}

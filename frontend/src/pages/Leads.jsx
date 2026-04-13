@@ -327,7 +327,7 @@ const Leads = () => {
       {/* Manual Add Lead Modal */}
       {showAddModal && (
         <div className="modal-overlay" onClick={() => { setShowAddModal(false); setModalError(''); }}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
+          <div className="modal leads-add-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Add New Lead</h2>
               <button
@@ -522,7 +522,7 @@ const Leads = () => {
       )}
 
       {/* Status Update Modal */}
-      {statusModalData && (
+      {/* {statusModalData && (
         <div
           className="modal-overlay"
           onClick={() => setStatusModalData(null)}
@@ -605,7 +605,7 @@ const Leads = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

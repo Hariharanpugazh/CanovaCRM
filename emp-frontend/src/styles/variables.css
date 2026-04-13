@@ -1,0 +1,55 @@
+:root {
+  /* Brand Colors */
+  --primary-blue: #1e40af;
+  --dark-blue: #1e3a8a;
+  --light-blue: #3b82f6;
+  --secondary-blue: #dbeafe;
+  
+  /* Status Colors */
+  --success-green: #10b981;
+  --danger-red: #ef4444;
+  --warning-orange: #f59e0b;
+  --info-gray: #6b7280;
+  
+  /* Status Indicators */
+  --status-ongoing: #3b82f6;
+  --status-closed: #6b7280;
+  --status-hot: #ef4444;
+  --status-warm: #f59e0b;
+  --status-cold: #3b82f6;
+  
+  /* Text Colors */
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-light: #9ca3af;
+  
+  /* Background Colors */
+  --bg-white: #ffffff;
+  --bg-light: #f9fafb;
+  --bg-gray: #f3f4f6;
+  
+  /* Border Colors */
+  --border-light: #e5e7eb;
+  --border-gray: #d1d5db;
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  
+  /* Font Sizes */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  
+  /* Border Radius */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-full: 9999px;
+}

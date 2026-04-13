@@ -1,3 +1,18 @@
+// AUTH DISABLED (frontend login removed)
+// Requirement: do not block requests with 401 due to missing/invalid tokens.
+// Original implementation is kept below for easy re-enable.
+export const authMiddleware = async (req, res, next) => {
+  req.user = {
+    _id: '000000000000000000000001',
+    name: 'Admin',
+    email: 'admin@local',
+    role: 'Admin',
+    status: 'Active'
+  };
+  next();
+};
+
+/*
 import { verifyToken } from '../utils/jwtUtils.js';
 import User from '../models/User.js';
 
@@ -25,17 +40,12 @@ export const authMiddleware = async (req, res, next) => {
     res.status(500).json({ error: 'Authentication failed' });
   }
 };
+*/
 
 export const adminOnly = (req, res, next) => {
-  if (!req.user || req.user.role !== 'Admin') {
-    return res.status(403).json({ error: 'Admin access required' });
-  }
   next();
 };
 
 export const salesUserOnly = (req, res, next) => {
-  if (!req.user || req.user.role !== 'SalesUser') {
-    return res.status(403).json({ error: 'Sales User access required' });
-  }
   next();
 };

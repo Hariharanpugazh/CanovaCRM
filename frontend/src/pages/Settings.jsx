@@ -72,8 +72,10 @@ const Settings = () => {
   return (
     <div className="settings">
       <div className="settings-content">
-        <div className="settings-header">
-          <h1>Settings</h1>
+        <div className="settings-breadcrumb" aria-label="Breadcrumb">
+          <span className="breadcrumb-item">Home</span>
+          <span className="breadcrumb-separator">&#8250;</span>
+          <span className="breadcrumb-item current">Settings</span>
         </div>
 
         <div className="settings-card">

@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI } from '../utils/apiClient';
 import { storage } from '../utils/helpers';
 
 const AuthContext = createContext();
@@ -23,17 +22,20 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
+  // Login is intentionally disabled in the frontend.
+  // Keeping the old implementation commented for reference.
+  /*
   const login = async (email, password) => {
     try {
       setError(null);
       const response = await authAPI.login(email, password);
       const { token, user } = response.data;
-      
+
       storage.setToken(token);
       storage.setUser(user);
       setToken(token);
       setUser(user);
-      
+
       return { success: true, user };
     } catch (err) {
       const message = err.response?.data?.error || 'Login failed';
@@ -53,12 +55,12 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       const response = await authAPI.register(name, email, password);
       const { token, user } = response.data;
-      
+
       storage.setToken(token);
       storage.setUser(user);
       setToken(token);
       setUser(user);
-      
+
       return { success: true, user };
     } catch (err) {
       const message = err.response?.data?.error || 'Registration failed';
@@ -66,6 +68,7 @@ export const AuthProvider = ({ children }) => {
       return { success: false, error: message };
     }
   };
+  */
 
   const isAuthenticated = !!token && !!user;
   const isAdmin = user?.role === 'Admin';
@@ -79,9 +82,9 @@ export const AuthProvider = ({ children }) => {
         error,
         isAuthenticated,
         isAdmin,
-        login,
-        logout,
-        register
+        // login,
+        // logout,
+        // register
       }}
     >
       {children}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import './Layout.css';
 
@@ -7,7 +8,7 @@ const Layout = ({ children }) => {
     <div className="layout">
       <Sidebar />
       <main className="main-content">
-        {children}
+        {children ?? <Outlet />}
       </main>
     </div>
   );
