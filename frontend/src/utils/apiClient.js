@@ -30,13 +30,12 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Login is disabled in the frontend.
-      // Clear any stale auth and keep the user on the dashboard.
+      // Clear stale auth and route to login for re-authentication.
       localStorage.removeItem('authToken');
       localStorage.removeItem('user');
 
-      if (window.location.pathname !== '/dashboard') {
-        window.location.replace('/dashboard');
+      if (window.location.pathname !== '/login') {
+        window.location.replace('/login');
       }
     }
     return Promise.reject(error);
@@ -45,10 +44,9 @@ apiClient.interceptors.response.use(
 
 // Auth API calls
 export const authAPI = {
-  // Login is disabled in the frontend.
-  // login: (email, password) => apiClient.post('/auth/login', { email, password }),
-  // register: (name, email, password) => apiClient.post('/auth/register', { name, email, password }),
-  // getCurrentUser: () => apiClient.get('/auth/me')
+  login: (email, password) => apiClient.post('/auth/login', { email, password }),
+  register: (name, email, password) => apiClient.post('/auth/register', { name, email, password }),
+  getCurrentUser: () => apiClient.get('/auth/me')
 };
 
 // Employees API calls

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { storage } from '../utils/helpers';
+import { authAPI } from '../utils/apiClient';
 
 const AuthContext = createContext();
 
@@ -22,9 +23,6 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  // Login is intentionally disabled in the frontend.
-  // Keeping the old implementation commented for reference.
-  /*
   const login = async (email, password) => {
     try {
       setError(null);
@@ -68,7 +66,6 @@ export const AuthProvider = ({ children }) => {
       return { success: false, error: message };
     }
   };
-  */
 
   const isAuthenticated = !!token && !!user;
   const isAdmin = user?.role === 'Admin';
@@ -82,9 +79,9 @@ export const AuthProvider = ({ children }) => {
         error,
         isAuthenticated,
         isAdmin,
-        // login,
-        // logout,
-        // register
+        login,
+        logout,
+        register
       }}
     >
       {children}

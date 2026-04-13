@@ -1,6 +1,7 @@
-import React from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import React, { useState } from 'react'
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
+import { useAuth } from './context/AuthContext'
 import Dashboard from './pages/Dashboard'
 import Settings from './pages/Settings'
 import Leads from './pages/Leads'
@@ -9,24 +10,20 @@ import './App.css'
 import Layout from './components/Layout'
 
 // Protected Route Component
-// const ProtectedRoute = ({ children }) => {
-//   const { isAuthenticated, loading } = useAuth()
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth()
 
-//   if (loading) {
-//     return <div className="loading">Loading...</div>
-//   }
+  if (loading) {
+    return <div className="loading">Loading...</div>
+  }
 
-//   if (!isAuthenticated) {
-//     return <Navigate to="/login" replace />
-//   }
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />
+  }
 
-//   return children
-// }
+  return children
+}
 
-// Login UI intentionally disabled.
-// Requirement: no admin login in frontend; always land on /dashboard.
-// (Keeping the old placeholder here commented for reference.)
-/*
 const LoginPage = () => {
   const { login } = useAuth()
   const navigate = useNavigate()
@@ -39,6 +36,12 @@ const LoginPage = () => {
     const result = await login(email, password)
     if (!result.success) {
       setError(result.error)
+      return
+    }
+
+    if (result.user?.role !== 'Admin') {
+      setError('Access denied. Admin account required.')
+      return
     } else {
       navigate('/dashboard')
     }
@@ -74,27 +77,32 @@ const LoginPage = () => {
     </div>
   )
 }
-*/
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          {/* Login is disabled: always redirect /login -> /dashboard */}
-          <Route path="/login" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/login" element={<LoginPage />} />
 
-          {/* All app pages use the Layout (sidebar) */}
-          <Route path="/" element={<Layout />}>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Layout />
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="leads" element={<Leads />} />
             <Route path="employees" element={<Employees />} />
             <Route path="settings" element={<Settings />} />
 
-            {/* Any unknown route should land on dashboard */}
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Route>
+
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
