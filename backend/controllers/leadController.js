@@ -95,17 +95,35 @@ export const updateLeadStatus = async (req, res) => {
     const { id } = req.params;
     const { status, type, scheduledDate } = req.body;
 
+    // Fetch current lead to check if it has a scheduled date
+    const currentLead = await Lead.findById(id);
+    if (!currentLead) {
+      return res.status(404).json({ error: 'Lead not found' });
+    }
+
+    // VALIDATION: If lead already has a scheduledDate, prevent type from being changed to 'Scheduled'
+    if (currentLead.scheduledDate && type === 'Scheduled') {
+      return res.status(400).json({ 
+        error: 'Cannot change type to "Scheduled" - lead is already scheduled. You can only change between Hot/Warm/Cold priorities.' 
+      });
+    }
+
     // Build update object based on what was actually changed
     const updateData = { updatedAt: new Date() };
     if (status) updateData.status = status;
     if (type) updateData.type = type;
     
-    // Explicitly handle scheduledDate (allow null if type changes away from Scheduled)
+    // Handle scheduledDate logic:
+    // 1. If setting type to 'Scheduled', include the scheduledDate from request
+    // 2. If type is Hot/Warm/Cold BUT lead is already scheduled, KEEP the scheduled date
+    // 3. If type is Hot/Warm/Cold AND lead is not scheduled, clear scheduledDate (shouldn't happen normally)
     if (type === 'Scheduled') {
       updateData.scheduledDate = scheduledDate ? new Date(scheduledDate) : null;
-    } else if (type) {
+    } else if (type && !currentLead.scheduledDate) {
+      // Only clear scheduledDate if lead wasn't previously scheduled
       updateData.scheduledDate = null;
     }
+    // If type && currentLead.scheduledDate exists, DON'T modify scheduledDate (keep it intact for priority changes)
 
     const lead = await Lead.findByIdAndUpdate(
       id,
@@ -207,6 +225,56 @@ export const getLeadsByUser = async (req, res) => {
       }
     });
   } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getScheduledLeads = async (req, res) => {
+  try {
+    const { page = 1, limit = 50, search } = req.query;
+
+    console.log('User ID from request:', req.user._id);
+
+    // FILTER: Only leads that have a scheduledDate (type can be Hot/Warm/Cold with a scheduled time)
+    const query = {
+      assignedTo: req.user._id,
+      scheduledDate: { $ne: null }
+    };
+
+    // Check all leads for this user first (DEBUG)
+    const allLeadsForUser = await Lead.find({ assignedTo: req.user._id });
+    console.log('Total leads assigned to this user:', allLeadsForUser.length);
+    console.log('Leads assigned to user:', allLeadsForUser.map(l => ({ name: l.name, type: l.type, scheduled: l.scheduledDate })));
+
+    // Support searching by 'name', 'email', 'source', and 'location' with case-insensitive regex
+    if (search) {
+      const searchRegex = new RegExp(search, 'i');
+      query.$or = [
+        { name: searchRegex },
+        { email: searchRegex },
+        { source: searchRegex },
+        { location: searchRegex }
+      ];
+    }
+
+    const total = await Lead.countDocuments(query);
+    console.log('Scheduled leads found:', total);
+
+    const leads = await Lead.find(query)
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .sort({ scheduledDate: 1 });
+
+    res.json({
+      leads,
+      pagination: {
+        total,
+        pages: Math.ceil(total / limit),
+        currentPage: parseInt(page)
+      }
+    });
+  } catch (error) {
+    console.error('Error in getScheduledLeads:', error);
     res.status(500).json({ error: error.message });
   }
 };

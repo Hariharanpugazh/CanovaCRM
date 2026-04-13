@@ -40,6 +40,13 @@ export const leadsAPI = {
     return apiClient.get(url);
   },
   
+  // Get only scheduled leads for current user
+  getScheduledLeads: (page = 1, limit = 50, search = '') => {
+    let url = `/leads/scheduled-calls?page=${page}&limit=${limit}`;
+    if (search) url += `&search=${search}`;
+    return apiClient.get(url);
+  },
+  
   // Update lead status, type, or schedule date
   updateLead: (leadId, data) => apiClient.put(`/leads/${leadId}/status`, data),
   

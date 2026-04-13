@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { leadsAPI } from '../../utils/api';
 import './Leads.css';
 import BottomNavigation from '../../components/BottomNavigation/BottomNavigation';
+import HeaderBanner from '../../components/HeaderBanner/HeaderBanner';
 
 function Leads() {
   const navigate = useNavigate();
@@ -57,6 +58,22 @@ function Leads() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
+  // Close modals when clicking outside (via backdrop OR escape key)
+  useEffect(() => {
+    const handleEscapeKey = (event) => {
+      if (event.key === 'Escape') {
+        setShowTypeSelector(null);
+        setShowScheduleSelector(null);
+        setShowStatusSelector(null);
+      }
+    };
+
+    if (showTypeSelector || showScheduleSelector || showStatusSelector) {
+      document.addEventListener('keydown', handleEscapeKey);
+      return () => document.removeEventListener('keydown', handleEscapeKey);
+    }
+  }, [showTypeSelector, showScheduleSelector, showStatusSelector]);
+
   const handleFilterChange = (status) => {
     setFilterStatus(status);
     const statusParam = status === 'all' ? '' : status.toLowerCase();
@@ -72,7 +89,8 @@ function Leads() {
       }
       setShowTypeSelector(null);
     } catch (err) {
-      alert('Failed to update lead type');
+      const errorMsg = err.response?.data?.error || 'Failed to update lead type';
+      alert(errorMsg);
     } finally {
       setUpdating(null);
     }
@@ -92,6 +110,7 @@ function Leads() {
       });
       if (response.data.lead) {
         setLeads(leads.map(lead => lead._id === leadId ? response.data.lead : lead));
+        setTempSchedule({ date: '', time: '' });
       }
       setShowScheduleSelector(null);
     } catch (err) {
@@ -134,22 +153,32 @@ function Leads() {
 
   return (
     <div className="leads-container">
-      {/* Curved Header */}
-      <div className="leads-curved-header">
-        <div className="header-top">
-          <span className="brand-logo">Canova<span className="brand-crm">CRM</span></span>
-        </div>
-        <div className="header-title-row" onClick={() => navigate(-1)}>
-          <span className="back-arrow">‹</span>
-          <h1 className="header-title">Leads</h1>
-        </div>
-      </div>
+      {/* Header Banner */}
+      <HeaderBanner title="Leads" showBack={true} />
+      
+      {/* Modal Backdrop */}
+      {(showTypeSelector || showScheduleSelector || showStatusSelector) && (
+        <div 
+          className="modal-backdrop" 
+          onClick={(e) => {
+            // Only close if clicking the backdrop itself, not bubbled from popups
+            if (e.target === e.currentTarget) {
+              setShowTypeSelector(null);
+              setShowScheduleSelector(null);
+              setShowStatusSelector(null);
+            }
+          }} 
+        />
+      )}
 
       <div className="leads-main-content">
         {/* Search Bar */}
         <div className="search-container">
           <div className="search-wrapper">
-            <span className="search-icon">🔍</span>
+            <svg className="search-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
             <input
               type="text"
               placeholder="Search"
@@ -192,7 +221,12 @@ function Leads() {
 
                 <div className="lead-card-bottom">
                   <div className="lead-date-new">
-                    <span className="calendar-icon">📅</span>
+                    <svg className="calendar-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
                     {formatDate(lead.date)}
                   </div>
                   
@@ -201,16 +235,20 @@ function Leads() {
                     <div className="action-button-container">
                       <button 
                         className="action-icon-btn" 
+                        title={lead.scheduledDate ? "Change priority (Hot/Warm/Cold) - Cannot set to Scheduled" : "Change priority type"}
                         onClick={() => {
                           setShowTypeSelector(showTypeSelector === lead._id ? null : lead._id);
                           setShowScheduleSelector(null);
                           setShowStatusSelector(null);
                         }}
                       >
-                        ✏️
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 20h9"></path>
+                          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
                       </button>
                       {showTypeSelector === lead._id && (
-                        <div className="type-dropdown-v2">
+                        <div className="type-dropdown-v2" onClick={(e) => e.stopPropagation()}>
                           <label className="popup-label">Type</label>
                           <button onClick={() => handleLeadTypeUpdate(lead._id, 'Hot')} className="type-btn-v2 hot">Hot</button>
                           <button onClick={() => handleLeadTypeUpdate(lead._id, 'Warm')} className="type-btn-v2 warm">Warm</button>
@@ -229,10 +267,13 @@ function Leads() {
                           setShowStatusSelector(null);
                         }}
                       >
-                        🕒
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
                       </button>
                       {showScheduleSelector === lead._id && (
-                        <div className="schedule-popover-v2">
+                        <div className="schedule-popover-v2" onClick={(e) => e.stopPropagation()}>
                           <label className="popup-label">Date</label>
                           <input 
                             type="date" 
@@ -261,15 +302,17 @@ function Leads() {
                           setTempStatus(lead.status);
                         }}
                       >
-                        ⌄
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
                       </button>
                       
                       {showStatusSelector === lead._id && (
-                        <div className="status-popover-v2">
+                        <div className="status-popover-v2" onClick={(e) => e.stopPropagation()}>
                           <div className="status-label-row">
                             <label className="popup-label">Lead Status</label>
                             <span className="info-icon" title="Lead cannot be closed if scheduled">ⓘ</span>
-                            {lead.type === 'Scheduled' && (
+                            {lead.scheduledDate && (
                               <div className="status-tooltip">Lead can not be closed if scheduled</div>
                             )}
                           </div>
@@ -278,13 +321,20 @@ function Leads() {
                             className="popup-select"
                             value={tempStatus}
                             onChange={(e) => setTempStatus(e.target.value)}
-                            disabled={lead.type === 'Scheduled'}
+                            disabled={lead.scheduledDate ? true : false}
                           >
                             <option value="Ongoing">Ongoing</option>
                             <option value="Closed">Closed</option>
                           </select>
                           
-                          <button className="popup-save-btn" onClick={() => handleStatusUpdate(lead._id)}>Save</button>
+                          <button 
+                            className="popup-save-btn" 
+                            onClick={() => handleStatusUpdate(lead._id)}
+                            disabled={lead.scheduledDate ? true : false}
+                            style={lead.scheduledDate ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+                          >
+                            Save
+                          </button>
                         </div>
                       )}
                     </div>

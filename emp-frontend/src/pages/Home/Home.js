@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
 import BottomNavigation from '../../components/BottomNavigation/BottomNavigation';
+import HeaderBanner from '../../components/HeaderBanner/HeaderBanner';
 
 function Home() {
   const navigate = useNavigate();
+  const userGreeting = "Good Morning";
+  const userName = localStorage.getItem('userEmail') ? localStorage.getItem('userEmail').split('@')[0] : 'Employee';
   const [checkInTime, setCheckInTime] = useState(null);
   const [checkOutTime, setCheckOutTime] = useState(null);
   const [isBreak, setIsBreak] = useState(false);
@@ -117,15 +120,12 @@ function Home() {
 
   return (
     <div className="home-container">
+      <HeaderBanner 
+        title={userName}
+        subtitle={userGreeting}
+      />
+      
       <div className="home-content">
-        {/* Header with User Greeting */}
-        <div className="home-header">
-          <div className="header-greeting">
-            <h2>Good Morning</h2>
-            <p className="user-name">{localStorage.getItem('userEmail') || 'Employee'}</p>
-          </div>
-        </div>
-
         {/* Check-in/Check-out Section */}
         <div className="timings-card">
           <h3 className="card-title">Timings</h3>

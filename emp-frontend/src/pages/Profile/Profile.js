@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Profile.css';
 import BottomNavigation from '../../components/BottomNavigation/BottomNavigation';
+import HeaderBanner from '../../components/HeaderBanner/HeaderBanner';
 
 function Profile() {
   const navigate = useNavigate();
@@ -78,12 +79,10 @@ function Profile() {
 
   return (
     <div className="profile-container">
+      {/* Header Banner */}
+      <HeaderBanner title="Profile" showBack={true} />
+      
       <div className="profile-content">
-        {/* Header */}
-        <div className="profile-header">
-          <h1 className="profile-title">Profile</h1>
-        </div>
-
         {/* Error Message */}
         {error && <div className="error-message">{error}</div>}
 

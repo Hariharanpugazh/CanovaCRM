@@ -2,20 +2,25 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: var(--bg-light);
+  background-color: #F8F9FA;
   max-width: 500px;
   margin: 0 auto;
 }
 
 .profile-content {
   flex: 1;
-  padding: var(--spacing-md);
-  padding-bottom: 100px;
-  overflow-y: auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 20px; /* Added spacing below blue banner */
+  position: relative;
+  z-index: 20;
 }
 
+/* Header - DEPRECATED, using HeaderBanner component */
 .profile-header {
-  margin-bottom: var(--spacing-lg);
+  display: none;
 }
 
 .profile-title {

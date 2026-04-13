@@ -4,7 +4,8 @@ import {
   createLead,
   updateLeadStatus,
   getAllLeads,
-  getLeadsByUser
+  getLeadsByUser,
+  getScheduledLeads
 } from '../controllers/leadController.js';
 import { authMiddleware, adminOnly } from '../middleware/authMiddleware.js';
 import { uploadCSV } from '../middleware/uploadMiddleware.js';
@@ -20,6 +21,7 @@ router.post('/', adminOnly, createLead);
 
 // User routes
 router.get('/my-leads', getLeadsByUser);
+router.get('/scheduled-calls', getScheduledLeads);
 router.put('/:id/status', updateLeadStatus);
 
 export default router;

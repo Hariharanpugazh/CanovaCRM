@@ -1,21 +1,7 @@
-// AUTH DISABLED (frontend login removed)
-// Requirement: do not block requests with 401 due to missing/invalid tokens.
-// Original implementation is kept below for easy re-enable.
-export const authMiddleware = async (req, res, next) => {
-  req.user = {
-    _id: '000000000000000000000001',
-    name: 'Admin',
-    email: 'admin@local',
-    role: 'Admin',
-    status: 'Active'
-  };
-  next();
-};
-
-/*
 import { verifyToken } from '../utils/jwtUtils.js';
 import User from '../models/User.js';
 
+// Authentication middleware - works for BOTH Admin and SalesUser
 export const authMiddleware = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
@@ -37,15 +23,24 @@ export const authMiddleware = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    res.status(500).json({ error: 'Authentication failed' });
+    res.status(401).json({ error: 'Authentication failed' });
   }
 };
-*/
 
+// Admin-only route protection
 export const adminOnly = (req, res, next) => {
-  next();
+  if (req.user && req.user.role === 'Admin') {
+    next();
+  } else {
+    res.status(403).json({ error: 'Admin access required' });
+  }
 };
 
+// Sales user-only route protection
 export const salesUserOnly = (req, res, next) => {
-  next();
+  if (req.user && req.user.role === 'SalesUser') {
+    next();
+  } else {
+    res.status(403).json({ error: 'Sales user access required' });
+  }
 };
