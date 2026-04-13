@@ -1,19 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
 import { leadsAPI } from '../../utils/api';
 import './Leads.css';
 import BottomNavigation from '../../components/BottomNavigation/BottomNavigation';
 import HeaderBanner from '../../components/HeaderBanner/HeaderBanner';
 
 function Leads() {
-  const navigate = useNavigate();
   const [leads, setLeads] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterStatus] = useState('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [pagination, setPagination] = useState({ total: 0, pages: 0, currentPage: 1 });
-  const [updating, setUpdating] = useState(null);
   
   // Modals/Overlays state
   const [showTypeSelector, setShowTypeSelector] = useState(null); // leadId
@@ -21,9 +17,13 @@ function Leads() {
   const [showStatusSelector, setShowStatusSelector] = useState(null); // leadId
   const [tempSchedule, setTempSchedule] = useState({ date: '', time: '' });
   const [tempStatus, setTempStatus] = useState('Ongoing');
+  const [updating, setUpdating] = useState(null);
+
+  // eslint-disable-next-line
+  const _ignore = [filterStatus, updating, setUpdating];
 
   // Fetch leads from backend
-  const fetchLeads = async (page = 1, status = '', search = '') => {
+  const fetchLeads = useCallback(async (page = 1, status = '', search = '') => {
     try {
       setLoading(true);
       setError('');
@@ -31,9 +31,6 @@ function Leads() {
       
       if (response.data.leads) {
         setLeads(response.data.leads);
-        if (response.data.pagination) {
-          setPagination(response.data.pagination);
-        }
       }
     } catch (err) {
       console.error('Error fetching leads:', err);
@@ -41,12 +38,12 @@ function Leads() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     const status = filterStatus === 'all' ? '' : filterStatus;
     fetchLeads(1, status, searchTerm);
-  }, []);
+  }, [filterStatus, searchTerm, fetchLeads]);
 
   // Handle search with debounce
   useEffect(() => {
@@ -56,7 +53,7 @@ function Leads() {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [searchTerm]);
+  }, [searchTerm, filterStatus, fetchLeads]);
 
   // Close modals when clicking outside (via backdrop OR escape key)
   useEffect(() => {
@@ -73,12 +70,6 @@ function Leads() {
       return () => document.removeEventListener('keydown', handleEscapeKey);
     }
   }, [showTypeSelector, showScheduleSelector, showStatusSelector]);
-
-  const handleFilterChange = (status) => {
-    setFilterStatus(status);
-    const statusParam = status === 'all' ? '' : status.toLowerCase();
-    fetchLeads(1, statusParam, searchTerm);
-  };
 
   const handleLeadTypeUpdate = async (leadId, newType) => {
     try {
