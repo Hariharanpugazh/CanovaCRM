@@ -5,7 +5,14 @@ import HeaderBanner from '../../components/HeaderBanner/HeaderBanner';
 import { employeeAPI } from '../../utils/api';
 
 function Home() {
-  const userName = localStorage.getItem('userEmail') ? localStorage.getItem('userEmail').split('@')[0] : 'Employee';
+  // Prefer full name stored at login, fall back to email local-part, then to generic label
+  const rawName = localStorage.getItem('userName') || localStorage.getItem('userEmail') || '';
+  const userName = rawName
+    ? // If stored as email, take local-part; if full name, use as-is. Then title-case it.
+      rawName.includes('@')
+        ? rawName.split('@')[0].replace(/\./g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+        : rawName.replace(/\b\w/g, c => c.toUpperCase())
+    : 'Employee';
   
   const [checkInTime, setCheckInTime] = useState(null);
   const [checkOutTime, setCheckOutTime] = useState(null);
@@ -74,6 +81,12 @@ function Home() {
 
   const handleCheckOut = async () => {
     try {
+      // If break is still active, automatically end it first
+      if (isBreakActive) {
+        await employeeAPI.endBreak();
+        setIsBreakActive(false);
+      }
+
       const response = await employeeAPI.checkOut();
       if (response.data.checkOutTime) {
         setCheckOutTime(response.data.checkOutTime);
@@ -94,6 +107,13 @@ function Home() {
         // Start break
         await employeeAPI.startBreak();
         setIsBreakActive(true);
+        
+        // Immediately fetch break start time
+        const attendanceResponse = await employeeAPI.getTodayAttendance();
+        if (attendanceResponse.data) {
+          setTodayBreakStartTime(attendanceResponse.data.todayBreakStartTime);
+        }
+        
         // Refresh activities
         const activitiesResponse = await employeeAPI.getRecentActivities();
         if (activitiesResponse.data.activities) {
@@ -103,16 +123,19 @@ function Home() {
         // End break
         await employeeAPI.endBreak();
         setIsBreakActive(false);
+        
         // Refresh all data
         const attendanceResponse = await employeeAPI.getTodayAttendance();
         if (attendanceResponse.data) {
           setTodayBreakStartTime(attendanceResponse.data.todayBreakStartTime);
           setTodayBreakEndTime(attendanceResponse.data.todayBreakEndTime);
         }
+        
         const breakLogsResponse = await employeeAPI.getBreakLogs();
         if (breakLogsResponse.data.breakLogs) {
           setBreakLogs(breakLogsResponse.data.breakLogs);
         }
+        
         const activitiesResponse = await employeeAPI.getRecentActivities();
         if (activitiesResponse.data.activities) {
           setRecentActivities(activitiesResponse.data.activities);

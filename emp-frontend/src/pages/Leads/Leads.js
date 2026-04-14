@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { leadsAPI } from '../../utils/api';
 import './Leads.css';
 import BottomNavigation from '../../components/BottomNavigation/BottomNavigation';
 import HeaderBanner from '../../components/HeaderBanner/HeaderBanner';
 
 function Leads() {
+  const hasInitializedRef = useRef(false);
   const [leads, setLeads] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus] = useState('all');
@@ -23,9 +24,11 @@ function Leads() {
   const _ignore = [filterStatus, updating, setUpdating];
 
   // Fetch leads from backend
-  const fetchLeads = useCallback(async (page = 1, status = '', search = '') => {
+  const fetchLeads = useCallback(async (page = 1, status = '', search = '', showLoader = false) => {
     try {
-      setLoading(true);
+      if (showLoader) {
+        setLoading(true);
+      }
       setError('');
       const response = await leadsAPI.getMyLeads(page, 10, status, search);
       
@@ -36,20 +39,27 @@ function Leads() {
       console.error('Error fetching leads:', err);
       setError(err.response?.data?.error || 'Failed to fetch leads');
     } finally {
-      setLoading(false);
+      if (showLoader) {
+        setLoading(false);
+      }
     }
   }, []);
 
   useEffect(() => {
+    // Initial fetch with loader
     const status = filterStatus === 'all' ? '' : filterStatus;
-    fetchLeads(1, status, searchTerm);
-  }, [filterStatus, searchTerm, fetchLeads]);
+    fetchLeads(1, status, '', true);
+    hasInitializedRef.current = true;
+  }, [filterStatus, fetchLeads]);
 
   // Handle search with debounce
   useEffect(() => {
+    if (!hasInitializedRef.current) return;
+
     const timer = setTimeout(() => {
       const status = filterStatus === 'all' ? '' : filterStatus;
-      fetchLeads(1, status, searchTerm);
+      // Debounced fetch without full-page loader to keep typing smooth
+      fetchLeads(1, status, searchTerm, false);
     }, 500);
 
     return () => clearTimeout(timer);
