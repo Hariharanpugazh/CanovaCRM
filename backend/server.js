@@ -11,6 +11,9 @@ import employeeRoutes from './routes/employeeRoutes.js';
 import leadRoutes from './routes/leadRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 
+// Import background jobs
+import { startAutoCloseJob } from './utils/autoCloseSchedules.js';
+
 // Load environment variables
 dotenv.config();
 
@@ -80,6 +83,9 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 5000;
 
 connectDB().then(() => {
+  // Start background jobs
+  startAutoCloseJob();
+
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`Environment: ${process.env.NODE_ENV}`);

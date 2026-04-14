@@ -28,6 +28,32 @@ export const uploadCSVLeads = async (req, res) => {
       assignedLeads.map(lead => new Lead(lead).save())
     );
 
+    // Update assignedLeads count for each user
+    const userLeadsMap = new Map();
+    for (const lead of createdLeads) {
+      if (lead.assignedTo) {
+        const userId = lead.assignedTo._id || lead.assignedTo;
+        const key = userId.toString();
+        userLeadsMap.set(key, (userLeadsMap.get(key) || 0) + 1);
+      }
+    }
+
+    // Increment assignedLeads for each user
+    for (const [userIdStr, count] of userLeadsMap) {
+      try {
+        const result = await User.findByIdAndUpdate(
+          userIdStr,
+          { $inc: { assignedLeads: count } },
+          { new: true }
+        );
+        if (!result) {
+          console.warn(`⚠️ User ${userIdStr} not found for counter update`);
+        }
+      } catch (error) {
+        console.error(`❌ Error updating counter for user ${userIdStr}:`, error.message);
+      }
+    }
+
     // Log activity
     const activity = new Activity({
       type: 'LeadAssigned',
@@ -71,6 +97,22 @@ export const createLead = async (req, res) => {
 
     await lead.save();
 
+    // Increment assignedLeads count for the user
+    if (assignedTo) {
+      try {
+        const result = await User.findByIdAndUpdate(
+          assignedTo,
+          { $inc: { assignedLeads: 1 } },
+          { new: true }
+        );
+        if (!result) {
+          console.warn(`⚠️ User ${assignedTo} not found for counter update`);
+        }
+      } catch (error) {
+        console.error(`❌ Error updating counter for user ${assignedTo}:`, error.message);
+      }
+    }
+
     // Log activity
     const activity = new Activity({
       type: 'LeadAssigned',
@@ -101,10 +143,18 @@ export const updateLeadStatus = async (req, res) => {
       return res.status(404).json({ error: 'Lead not found' });
     }
 
-    // VALIDATION: If lead already has a scheduledDate, prevent type from being changed to 'Scheduled'
+    // VALIDATION: If lead is already scheduled (has scheduledDate), prevent changing TO 'Scheduled' type
+    // But ALLOW changing between Hot/Warm/Cold (priority changes)
     if (currentLead.scheduledDate && type === 'Scheduled') {
       return res.status(400).json({ 
-        error: 'Cannot change type to "Scheduled" - lead is already scheduled. You can only change between Hot/Warm/Cold priorities.' 
+        error: 'Lead is already scheduled. Cannot change type to "Scheduled".' 
+      });
+    }
+
+    // VALIDATION: If trying to set type to 'Scheduled', require scheduledDate
+    if (type === 'Scheduled' && !scheduledDate) {
+      return res.status(400).json({ 
+        error: 'Scheduled Date is required when setting type to "Scheduled"' 
       });
     }
 
@@ -114,16 +164,22 @@ export const updateLeadStatus = async (req, res) => {
     if (type) updateData.type = type;
     
     // Handle scheduledDate logic:
-    // 1. If setting type to 'Scheduled', include the scheduledDate from request
-    // 2. If type is Hot/Warm/Cold BUT lead is already scheduled, KEEP the scheduled date
-    // 3. If type is Hot/Warm/Cold AND lead is not scheduled, clear scheduledDate (shouldn't happen normally)
-    if (type === 'Scheduled') {
-      updateData.scheduledDate = scheduledDate ? new Date(scheduledDate) : null;
+    // 1. If scheduledDate is provided, ONLY update the scheduledDate without changing type
+    // 2. If type is Hot/Warm/Cold AND lead is already scheduled, KEEP the scheduled date
+    // 3. If type is Hot/Warm/Cold AND lead is not scheduled, clear scheduledDate
+    if (scheduledDate) {
+      // Just update the scheduledDate, don't auto-set type
+      updateData.scheduledDate = new Date(scheduledDate);
+    } else if (type === 'Scheduled') {
+      // If explicitly setting type to 'Scheduled' without scheduledDate, that's invalid
+      return res.status(400).json({ 
+        error: 'Scheduled Date is required when setting type to "Scheduled"' 
+      });
     } else if (type && !currentLead.scheduledDate) {
       // Only clear scheduledDate if lead wasn't previously scheduled
       updateData.scheduledDate = null;
     }
-    // If type && currentLead.scheduledDate exists, DON'T modify scheduledDate (keep it intact for priority changes)
+    // If scheduledDate provided, DON'T modify type (keep original Cold/Hot/Warm)
 
     const lead = await Lead.findByIdAndUpdate(
       id,
@@ -133,6 +189,22 @@ export const updateLeadStatus = async (req, res) => {
 
     if (!lead) {
       return res.status(404).json({ error: 'Lead not found' });
+    }
+
+    // Update closedLeads count if status changed to "Closed"
+    if (status === 'Closed' && currentLead.status !== 'Closed' && lead.assignedTo) {
+      try {
+        const result = await User.findByIdAndUpdate(
+          lead.assignedTo,
+          { $inc: { closedLeads: 1 } },
+          { new: true }
+        );
+        if (!result) {
+          console.warn(`⚠️ User ${lead.assignedTo} not found for closedLeads counter update`);
+        }
+      } catch (error) {
+        console.error(`❌ Error updating closedLeads counter for user ${lead.assignedTo}:`, error.message);
+      }
     }
 
     // Log activity with proper description of what changed

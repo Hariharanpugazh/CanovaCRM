@@ -106,7 +106,6 @@ function Leads() {
       setUpdating(leadId);
       const scheduledDateTime = `${tempSchedule.date}T${tempSchedule.time}`;
       const response = await leadsAPI.updateLead(leadId, { 
-        type: 'Scheduled',
         scheduledDate: scheduledDateTime 
       });
       if (response.data.lead) {

@@ -114,8 +114,13 @@ function Profile() {
     localStorage.removeItem('userRole');
     localStorage.removeItem('userStatus');
     
-    // Redirect to login page
+    // Redirect to login page and refresh
     navigate('/login', { replace: true });
+    
+    // Reload page to clear all state
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   };
 
   if (loading) {
