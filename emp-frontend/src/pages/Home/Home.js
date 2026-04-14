@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import './Home.css';
 import BottomNavigation from '../../components/BottomNavigation/BottomNavigation';
 import HeaderBanner from '../../components/HeaderBanner/HeaderBanner';
 import { employeeAPI } from '../../utils/api';
 
 function Home() {
-  const navigate = useNavigate();
   const userName = localStorage.getItem('userEmail') ? localStorage.getItem('userEmail').split('@')[0] : 'Employee';
   
   const [checkInTime, setCheckInTime] = useState(null);
@@ -136,12 +134,6 @@ function Home() {
     if (checkInTime && checkOutTime) return 'completed'; // Red - day completed
     if (checkInTime && !checkOutTime) return 'active'; // Green - checked in
     return 'pending'; // White - not checked in
-  };
-
-  const getCheckOutIndicator = () => {
-    if (checkOutTime) return 'completed'; // Red - checked out
-    if (checkInTime) return 'pending'; // White - can checkout
-    return 'pending'; // White - can't checkout without check-in
   };
 
   const getBreakIndicator = () => {
