@@ -1,131 +1,59 @@
-# MERN-Cuvutee Sales CRM System
+# Canova CRM - Sales Management System
 
-A comprehensive Sales CRM (Customer Relationship Management) system built with the MERN stack (MongoDB, Express, React, Node.js). Designed for efficient lead management, employee management, and real-time sales performance tracking.
+A modern Sales CRM built with **React, Node.js, and MongoDB**. Manage leads, employees, track attendance, and monitor real-time sales performance with intelligent lead assignment and role-based access control.
 
-## 📸 Project Overview
+## Key Features
 
+- **Dashboard**: Real-time KPI metrics, sales performance charts, recent activities, active sales team
+- **Employee Management**: Create, edit, delete, bulk operations with status tracking
+- **Leads Management**: CSV import, manual creation, intelligent language-based assignment
+- **Attendance System**: Check-in/out, break tracking, activity logging
+- **Real-time Search**: Case-insensitive team member and leads search
+- **Role-Based Access**: Admin and Sales User roles with JWT authentication
+
+## Tech Stack
+
+| Component | Technology |
+|-----------|-----------|
+| **Frontend** | React + Vanilla CSS |
+| **Backend** | Node.js + Express |
+| **Database** | MongoDB |
+
+## Deployment Links
+
+| Platform | URL |
+|----------|-----|
+| **Employee Portal** | [https://canovacrm-employee.harlee.pro](https://canovacrm-employee.harlee.pro) |
+| **Admin Dashboard** | [https://canovacrm-admin.harlee.pro](https://canovacrm-admin.harlee.pro) |
+| **Backend API** | [https://canovacrm-knj2.onrender.com](https://canovacrm-knj2.onrender.com) |
+| **GitHub Repository** | [https://github.com/Hariharanpugazh/CanovaCRM](https://github.com/Hariharanpugazh/CanovaCRM) |
+
+## Login Credentials
+
+### Admin Dashboard
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                                                               │
-│  Frontend                Backend                Database      │
-│  (React + CSS)          (Node + Express)      (MongoDB)       │
-│  ├─ Dashboard           ├─ Auth API           ├─ Users       │
-│  ├─ Employees Mgmt      ├─ Employee API       ├─ Leads       │
-│  ├─ Leads Mgmt          ├─ Leads API          └─ Activities  │
-│  └─ Settings            ├─ Dashboard API                      │
-│                         └─ Lead Assignment                    │
-│                                                               │
-└─────────────────────────────────────────────────────────────┘
-```
-
-## ✨ Key Features
-
-### 🎯 Dashboard
-- Real-time KPI metrics (unassigned leads, weekly assignments, conversion rate)
-- Sales performance graph (2-week trends)
-- Recent activity feed
-- Active sales team list
-- Real-time team member search
-
-### 👥 Employee Management
-- Paginated employee list (8 per page)
-- Create, edit, delete operations
-- Bulk deletion support
-- Language preference assignment
-- Status tracking (Active/Inactive)
-
-### 📊 Leads Management
-- CSV bulk import with validation
-- Manual lead creation
-- Intelligent lead assignment (language + round-robin)
-- Status tracking (Ongoing, Closed, Scheduled)
-- Lead type classification (Hot, Warm, Cold)
-
-### 🔐 Security & Access Control
-- Role-based access (Admin vs Sales User)
-- JWT authentication with token refresh
-- Password hashing using bcryptjs
-- Secure API endpoints
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| **Frontend** | React 18, Vite, Vanilla CSS, Recharts, Axios |
-| **Backend** | Node.js, Express.js, Mongoose, JWT, Bcryptjs |
-| **Database** | MongoDB with indexes for performance |
-| **Deployment** | Vercel (Frontend), Heroku (Backend), MongoDB Atlas |
-
----
-
-## 📦 Project Structure
-
-```
-MERN-Cuvutee/
-│
-├── frontend/                    # React Frontend (Port 3000)
-│   ├── src/
-│   │   ├── components/         # Reusable UI components
-│   │   ├── pages/              # Page-level components
-│   │   ├── styles/             # CSS modules
-│   │   ├── utils/              # Helper functions & API client
-│   │   ├── hooks/              # Custom React hooks
-│   │   ├── context/            # Context API state
-│   │   ├── App.jsx
-│   │   └── main.jsx
-│   ├── public/
-│   ├── package.json
-│   ├── vite.config.js
-│   └── README.md
-│
-├── backend/                     # Node.js Backend (Port 5000)
-│   ├── models/                 # MongoDB schemas
-│   ├── routes/                 # API routes
-│   ├── controllers/            # Route handlers & business logic
-│   ├── middleware/             # Auth, upload middleware
-│   ├── utils/                  # Helper utilities
-│   ├── config/                 # Configuration files
-│   ├── uploads/                # File upload directory
-│   ├── server.js               # Main server file
-│   ├── package.json
-│   ├── .env.example
-│   └── README.md
-│
-├── PROJECT_DOCUMENTATION.md    # Complete documentation
-├── QUICK_START.md             # Quick setup guide
-└── README.md                  # This file
+Email:    admin@cuvutee.com
+Password: admin123
 ```
 
----
+### Employee Portal
+```
+Email:    emp001@gmail.com
+Password: emp001@gmail.com
+```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
-- Node.js 16+ 
-- npm or yarn
-- MongoDB (local or Atlas)
-
-### 🔑 Default Login Credentials
-
-#### Admin Dashboard
-```
-Email:    admin@example.com
-Password: admin@123
-```
-
-#### Employee Portal
-```
-Email:    aruna.kannada@example.com
-Password: aruna.kannada@example.com
-```
+- Node.js 16+
+- npm/yarn
+- MongoDB
 
 ### Installation
 
-**1. Clone the repository**
+**1. Clone Repository**
 ```bash
-git clone <repository-url>
+git clone https://github.com/Hariharanpugazh/CanovaCRM.git
 cd MERN-Cuvutee
 ```
 
@@ -133,336 +61,120 @@ cd MERN-Cuvutee
 ```bash
 cd backend
 npm install
-cp .env.example .env
-# Update .env with MongoDB URI and JWT secret
 npm run dev
 ```
 
-**3. Frontend Setup** (in another terminal)
+**3. Frontend Setup** (new terminal)
+```bash
+cd emp-frontend
+npm install
+npm run dev
+```
+
+**4. Admin Frontend Setup** (new terminal)
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-**4. Access the application**
-- Frontend: http://localhost:3000
-- Backend: http://localhost:5000
-- API Docs: http://localhost:5000/api
+## Project Structure
 
----
+```
+├── backend/
+│   ├── models/              # MongoDB schemas
+│   ├── controllers/         # Business logic
+│   ├── routes/              # API endpoints
+│   ├── middleware/          # Auth, upload
+│   └── utils/               # Helpers
+├── emp-frontend/            # Employee Portal
+│   └── src/
+├── frontend/                # Admin Dashboard
+│   └── src/
+└── README.md
+```
 
-## 📝 API Documentation
+## API Endpoints
 
 ### Authentication
-```
-POST   /api/auth/login              # User login
-POST   /api/auth/register           # User registration
-GET    /api/auth/me                 # Current user (Protected)
-```
+- `POST /api/auth/login` - User login
+- `GET /api/auth/me` - Current user
 
-### Employees (Admin Only)
-```
-GET    /api/employees               # List employees (paginated)
-POST   /api/employees               # Create employee
-PUT    /api/employees/:id           # Update employee
-DELETE /api/employees/:id           # Delete employee
-POST   /api/employees/bulk-delete   # Bulk delete
-```
+### Employees
+- `GET /api/employees` - List employees
+- `POST /api/employees` - Create employee
+- `PUT /api/employees/:id` - Update employee
+- `DELETE /api/employees/:id` - Delete employee
 
 ### Leads
-```
-GET    /api/leads/all               # All leads (Admin)
-GET    /api/leads/my-leads          # User's leads
-POST   /api/leads                   # Create lead (Admin)
-POST   /api/leads/upload-csv        # CSV upload (Admin)
-PUT    /api/leads/:id/status        # Update lead status
-```
+- `GET /api/leads/my-leads` - User's leads
+- `GET /api/leads/scheduled-calls` - Scheduled leads
+- `POST /api/leads/upload-csv` - CSV upload
+- `PUT /api/leads/:id/status` - Update status
 
 ### Dashboard
-```
-GET    /api/dashboard/stats         # KPI cards
-GET    /api/dashboard/graph         # Sales graph data
-GET    /api/dashboard/activities    # Recent activities
-GET    /api/dashboard/sales-people  # Sales team
-GET    /api/dashboard/search-team   # Search team members
-```
+- `GET /api/dashboard/stats` - KPI metrics
+- `GET /api/dashboard/graph` - Sales graph
+- `GET /api/dashboard/activities` - Recent activities
 
----
+## Key Functionality
 
-## 🗄️ Database Schema
+### Intelligent Lead Assignment
+- Language-based matching
+- Round-robin distribution
+- Maximum 3 leads per user threshold
+- Automatic activity logging
 
-### User Collection
-```javascript
-{
-  name: String,
-  email: String (unique),
-  password: String (hashed),
-  role: "Admin" | "SalesUser",
-  status: "Active" | "Inactive",
-  languages: [String],
-  employeeId: String (unique),
-  assignedLeads: Number,
-  closedLeads: Number,
-  createdAt: Date,
-  updatedAt: Date
-}
-```
+### Attendance Tracking
+- Real-time check-in/out
+- Break start/end with duration logging
+- Activity feed integration
+- Last 4 break logs display
 
-### Lead Collection
-```javascript
-{
-  name: String,
-  email: String,
-  source: String,
-  date: Date,
-  location: String,
-  language: String,
-  assignedTo: ObjectId (User),
-  status: "Ongoing" | "Closed" | "Scheduled",
-  type: "Hot" | "Warm" | "Cold" | "Scheduled",
-  scheduledDate: Date,
-  createdAt: Date,
-  updatedAt: Date
-}
-```
+### Sales Metrics
+- Conversion Rate: (Closed Leads / Assigned Leads) × 100
+- Unassigned Leads Count
+- Weekly Assignment Count
+- Active Sales People Count
 
-### Activity Collection
-```javascript
-{
-  type: String (Activity type),
-  userId: ObjectId (User),
-  leadId: ObjectId (Lead),
-  description: String,
-  details: Mixed,
-  createdAt: Date
-}
-```
+## Database Collections
 
----
+- **Users**: Admin and Sales employees with language preferences
+- **Leads**: Sales leads with assignment tracking and status
+- **Attendance**: Daily check-in/out and break records
+- **Activities**: Audit log of all user actions
 
-## 🔄 Lead Assignment Algorithm
+## Security
 
-The system uses intelligent lead assignment based on:
+- JWT authentication with token-based sessions
+- Password hashing (bcryptjs)
+- Role-based access control (RBAC)
+- CORS enabled for multi-frontend deployment
+- Input validation and sanitization
 
-1. **Language Matching**: Assigns leads to users who speak that language
-2. **Round-Robin Distribution**: Balances load among available users
-3. **Threshold System**: Maximum 3 leads per user before moving to next
-4. **Parallel Performance**: Uses Promise.all() for bulk operations
-
-```
-Algorithm Flow:
-1. Admin creates/uploads lead(s)
-2. System identifies users speaking lead's language
-3. System counts current leads per user
-4. Select user with least leads (if below threshold)
-5. Assign lead and log activity
-6. Update user's lead count
-```
-
----
-
-## 📊 Dashboard Metrics
-
-| Metric | Formula |
-|--------|---------|
-| **Unassigned Leads** | Count of leads with null assignedTo |
-| **Assigned This Week** | Count of leads created in current week |
-| **Active Sales People** | Count of users with role=SalesUser and status=Active |
-| **Conversion Rate** | (Closed Leads / Assigned Leads) × 100 |
-
----
-
-## 🔑 Test Credentials
-
-After running seed data:
-
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@cuvutee.com | admin123 |
-| Sales User (Marathi) | raj.marathi@cuvutee.com | marathi123 |
-| Sales User (Kannada) | aruna.kannada@cuvutee.com | kannada123 |
-
----
-
-## 📂 CSV File Format
-
-**Required columns:**
-```csv
-name,email,source,date,location,language
-John Doe,john@example.com,Website,2024-01-15,Mumbai,Marathi
-Jane Smith,jane@example.com,Phone,2024-01-16,Bangalore,Kannada
-```
-
-**Validation Rules:**
-- Email must be valid format
-- Language must be: Marathi, Kannada, Hindi, English, or Bengali
-- Date must be in valid format
-- All columns are required
-
----
-
-## ⚙️ Environment Configuration
+## Environment Configuration
 
 ### Backend (.env)
-```env
-MONGODB_URI=mongodb://localhost:27017/cuvutee
+```
+MONGODB_URI=<your-mongodb-uri>
 PORT=5000
-JWT_SECRET=your_secret_key_here
-FRONTEND_URL=http://localhost:3000
-NODE_ENV=development
-MAX_FILE_SIZE=5242880
+JWT_SECRET=<your-secret>
+FRONTEND_URL=<frontend-urls>
+NODE_ENV=production
 ```
 
-### Frontend (.env)
-```env
-VITE_API_URL=http://localhost:5000/api
+### Frontend (.env.local)
+```
+REACT_APP_API_URL=<backend-url>
 ```
 
----
+## Support
 
-## 🔒 Security Features
-
-- ✅ Password hashing with bcryptjs (10 salt rounds)
-- ✅ JWT-based authentication with 7-day expiry
-- ✅ Role-based access control (RBAC)
-- ✅ CORS enabled for cross-origin requests
-- ✅ Helmet.js for HTTP security headers
-- ✅ Input validation and sanitization
-- ✅ Protected API endpoints
+For issues or questions:
+1. Check GitHub repository
+2. Review API documentation in backend
+3. Check browser console for errors
 
 ---
 
-## 🚀 Deployment
-
-### Frontend (Vercel)
-```bash
-cd frontend
-npm run build
-# Deploy dist folder to Vercel
-```
-
-### Backend (Heroku)
-```bash
-heroku create app-name
-git push heroku main
-heroku config:set MONGODB_URI=<your_uri>
-```
-
-### Database (MongoDB Atlas)
-1. Create account at mongodb.com/cloud/atlas
-2. Create cluster and get connection string
-3. Update MONGODB_URI in backend .env
-
----
-
-## 📚 Documentation
-
-- **[PROJECT_DOCUMENTATION.md](./PROJECT_DOCUMENTATION.md)** - Complete technical documentation
-- **[QUICK_START.md](./QUICK_START.md)** - Quick setup guide
-- **[frontend/README.md](./frontend/README.md)** - Frontend documentation
-- **[backend/README.md](./backend/README.md)** - Backend documentation
-
----
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-| Problem | Solution |
-|---------|----------|
-| MongoDB connection failed | Ensure MongoDB is running and URI is correct |
-| Port 3000/5000 already in use | Kill the process: `lsof -i :3000` or `:5000` |
-| CORS error | Check FRONTEND_URL in backend .env |
-| Token invalid | Clear localStorage and login again |
-| CSV upload fails | Verify CSV format and column names |
-
-### Debug Mode
-
-```bash
-# Backend
-DEBUG=* npm run dev
-
-# Frontend
-npm run dev -- --debug
-```
-
----
-
-## ✅ Implementation Checklist
-
-- [x] Project structure setup
-- [x] Backend API scaffolding
-- [x] MongoDB models and schemas
-- [x] Authentication system
-- [x] Lead assignment logic
-- [x] Frontend structure
-- [x] API client integration
-- [x] Utility functions
-- [x] Custom hooks
-- [ ] UI Components (in progress)
-- [ ] Dashboard page (pending)
-- [ ] Employee management pages (pending)
-- [ ] Leads management pages (pending)
-- [ ] Styling & CSS (pending)
-- [ ] Testing (pending)
-- [ ] Deployment (pending)
-
----
-
-## 🔗 Useful Resources
-
-- [React Documentation](https://react.dev)
-- [Express.js Guide](https://expressjs.com)
-- [MongoDB Docs](https://docs.mongodb.com)
-- [JWT.io](https://jwt.io)
-- [Vite Documentation](https://vitejs.dev)
-
----
-
-## 🤝 Contributing
-
-1. Create a feature branch: `git checkout -b feature/name`
-2. Make your changes
-3. Commit: `git commit -m "Add feature: description"`
-4. Push: `git push origin feature/name`
-5. Create a Pull Request
-
----
-
-## 📞 Support
-
-Need help?
-1. Check the comprehensive [PROJECT_DOCUMENTATION.md](./PROJECT_DOCUMENTATION.md)
-2. Review [QUICK_START.md](./QUICK_START.md) for setup issues
-3. Check backend/frontend README files
-4. Review troubleshooting section above
-
----
-
-## 📄 License
-
-ISC License - Feel free to use this project
-
----
-
-## 🎯 Project Status
-
-**Status**: ✅ Setup Complete | 🔄 In Development
-
-**Last Updated**: April 2024
-**Version**: 1.0.0
-
----
-
-**Ready to build! 🚀**
-
-Next Steps:
-1. ✅ Setup complete
-2. 📖 Review documentation
-3. 🎨 Check Figma design
-4. 💻 Start building components
-5. 🧪 Test thoroughly
-6. 🌐 Deploy to production
-
-Happy Coding! ✨
+**Version**: 1.0.0 | **Last Updated**: April 2026 | **Status**: Production Ready ✅

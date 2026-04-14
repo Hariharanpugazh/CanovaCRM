@@ -105,10 +105,17 @@ function Profile() {
   };
 
   const handleLogout = () => {
+    // Clear all authentication data from localStorage
     localStorage.removeItem('token');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userProfile');
-    navigate('/login');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userStatus');
+    
+    // Redirect to login page
+    navigate('/login', { replace: true });
   };
 
   if (loading) {
