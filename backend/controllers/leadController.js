@@ -135,12 +135,24 @@ export const updateLeadStatus = async (req, res) => {
       return res.status(404).json({ error: 'Lead not found' });
     }
 
-    // Log activity
+    // Log activity with proper description of what changed
+    let changeDescription = 'Lead updated';
+    if (type && status) {
+      changeDescription = `Lead type changed to ${type} and status to ${status}`;
+    } else if (type) {
+      changeDescription = `Lead type changed to ${type}`;
+    } else if (status) {
+      changeDescription = `Lead status changed to ${status}`;
+    }
+    if (updateData.scheduledDate) {
+      changeDescription += ` and scheduled`;
+    }
+
     const activity = new Activity({
       type: 'LeadStatusUpdated',
       userId: req.user._id,
       leadId: lead._id,
-      description: `Lead status updated to ${status}`,
+      description: changeDescription,
       details: { leadId: lead._id, status, type }
     });
     await activity.save();

@@ -107,6 +107,20 @@ MERN-Cuvutee/
 - npm or yarn
 - MongoDB (local or Atlas)
 
+### 🔑 Default Login Credentials
+
+#### Admin Dashboard
+```
+Email:    admin@example.com
+Password: admin@123
+```
+
+#### Employee Portal
+```
+Email:    aruna.kannada@example.com
+Password: aruna.kannada@example.com
+```
+
 ### Installation
 
 **1. Clone the repository**

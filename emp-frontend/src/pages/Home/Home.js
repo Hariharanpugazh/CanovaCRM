@@ -3,245 +3,282 @@ import { useNavigate } from 'react-router-dom';
 import './Home.css';
 import BottomNavigation from '../../components/BottomNavigation/BottomNavigation';
 import HeaderBanner from '../../components/HeaderBanner/HeaderBanner';
+import { employeeAPI } from '../../utils/api';
 
 function Home() {
   const navigate = useNavigate();
-  const userGreeting = "Good Morning";
   const userName = localStorage.getItem('userEmail') ? localStorage.getItem('userEmail').split('@')[0] : 'Employee';
+  
   const [checkInTime, setCheckInTime] = useState(null);
   const [checkOutTime, setCheckOutTime] = useState(null);
-  const [isBreak, setIsBreak] = useState(false);
+  const [isBreakActive, setIsBreakActive] = useState(false);
+  const [todayBreakStartTime, setTodayBreakStartTime] = useState(null);
+  const [todayBreakEndTime, setTodayBreakEndTime] = useState(null);
   const [breakLogs, setBreakLogs] = useState([]);
-  const [currentBreakStart, setCurrentBreakStart] = useState(null);
   const [recentActivities, setRecentActivities] = useState([]);
-  const [assignedLeads, setAssignedLeads] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
+  // Fetch today's attendance and break logs on mount
   useEffect(() => {
-    // Load check-in/out times from localStorage
-    const today = new Date().toDateString();
-    const savedCheckIn = localStorage.getItem(`checkIn_${today}`);
-    const savedCheckOut = localStorage.getItem(`checkOut_${today}`);
-    
-    if (savedCheckIn) setCheckInTime(new Date(savedCheckIn));
-    if (savedCheckOut) setCheckOutTime(new Date(savedCheckOut));
-    
-    // Load break logs
-    const savedBreakLogs = localStorage.getItem('breakLogs');
-    if (savedBreakLogs) {
-      setBreakLogs(JSON.parse(savedBreakLogs));
-    }
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError('');
 
-    // TODO: Fetch from backend
-    // Mock recent activities
-    setRecentActivities([
-      { id: 1, type: 'lead_assigned', message: 'You were assigned 3 new leads', time: '1 hour ago' },
-      { id: 2, type: 'lead_status', message: 'Lead status updated to Closed', time: '2 hours ago' },
-      { id: 3, type: 'employee_created', message: 'New employee was created', time: '1 day ago' },
-      { id: 4, type: 'lead_assigned', message: 'You were assigned 1 new lead', time: '2 days ago' },
-      { id: 5, type: 'lead_status', message: 'Lead status updated to Ongoing', time: '3 days ago' },
-      { id: 6, type: 'break_logged', message: 'Break logged successfully', time: '4 days ago' },
-      { id: 7, type: 'checkin_logged', message: 'Check-in time recorded', time: '5 days ago' },
-    ]);
+        // Get today's attendance
+        const attendanceResponse = await employeeAPI.getTodayAttendance();
+        if (attendanceResponse.data) {
+          setCheckInTime(attendanceResponse.data.checkInTime);
+          setCheckOutTime(attendanceResponse.data.checkOutTime);
+          setIsBreakActive(attendanceResponse.data.isBreakActive);
+          setTodayBreakStartTime(attendanceResponse.data.todayBreakStartTime);
+          setTodayBreakEndTime(attendanceResponse.data.todayBreakEndTime);
+        }
 
-    // Mock assigned leads
-    setAssignedLeads([
-      {
-        id: 1,
-        name: 'John Doe',
-        email: 'john@example.com',
-        assignedDate: '2024-04-10',
-        status: 'Ongoing',
-        type: 'Hot',
-        scheduleTime: null,
-      },
-      {
-        id: 2,
-        name: 'Jane Smith',
-        email: 'jane@example.com',
-        assignedDate: '2024-04-09',
-        status: 'Ongoing',
-        type: 'Warm',
-        scheduleTime: null,
-      },
-      {
-        id: 3,
-        name: 'Bob Johnson',
-        email: 'bob@example.com',
-        assignedDate: '2024-04-08',
-        status: 'Closed',
-        type: 'Cold',
-        scheduleTime: null,
-      },
-    ]);
+        // Get break logs
+        const breakLogsResponse = await employeeAPI.getBreakLogs();
+        if (breakLogsResponse.data.breakLogs) {
+          setBreakLogs(breakLogsResponse.data.breakLogs);
+        }
+
+        // Get recent activities
+        const activitiesResponse = await employeeAPI.getRecentActivities();
+        if (activitiesResponse.data.activities) {
+          setRecentActivities(activitiesResponse.data.activities);
+        }
+      } catch (err) {
+        console.error('Error fetching home data:', err);
+        setError('Failed to load data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  const handleCheckIn = () => {
-    const now = new Date();
-    setCheckInTime(now);
-    const today = new Date().toDateString();
-    localStorage.setItem(`checkIn_${today}`, now.toISOString());
-  };
-
-  const handleCheckOut = () => {
-    const now = new Date();
-    setCheckOutTime(now);
-    const today = new Date().toDateString();
-    localStorage.setItem(`checkOut_${today}`, now.toISOString());
-  };
-
-  const handleBreakToggle = () => {
-    const now = new Date();
-    if (!isBreak) {
-      // Start break
-      setCurrentBreakStart(now);
-      setIsBreak(true);
-    } else {
-      // End break
-      if (currentBreakStart) {
-        const breakLog = {
-          date: new Date().toLocaleDateString(),
-          startTime: currentBreakStart.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-          endTime: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-        };
-        
-        const updatedBreakLogs = [breakLog, ...breakLogs].slice(0, 4); // Keep last 4 days
-        setBreakLogs(updatedBreakLogs);
-        localStorage.setItem('breakLogs', JSON.stringify(updatedBreakLogs));
+  const handleCheckIn = async () => {
+    try {
+      const response = await employeeAPI.checkIn();
+      if (response.data.checkInTime) {
+        setCheckInTime(response.data.checkInTime);
+        // Refresh activities
+        const activitiesResponse = await employeeAPI.getRecentActivities();
+        if (activitiesResponse.data.activities) {
+          setRecentActivities(activitiesResponse.data.activities);
+        }
       }
-      setIsBreak(false);
-      setCurrentBreakStart(null);
+    } catch (err) {
+      alert('Failed to check in: ' + (err.response?.data?.error || err.message));
     }
   };
 
-  const formatTime = (date) => {
-    if (!date) return 'Not logged';
-    return new Date(date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  const handleCheckOut = async () => {
+    try {
+      const response = await employeeAPI.checkOut();
+      if (response.data.checkOutTime) {
+        setCheckOutTime(response.data.checkOutTime);
+        // Refresh activities
+        const activitiesResponse = await employeeAPI.getRecentActivities();
+        if (activitiesResponse.data.activities) {
+          setRecentActivities(activitiesResponse.data.activities);
+        }
+      }
+    } catch (err) {
+      alert('Failed to check out: ' + (err.response?.data?.error || err.message));
+    }
   };
+
+  const handleBreakToggle = async () => {
+    try {
+      if (!isBreakActive) {
+        // Start break
+        await employeeAPI.startBreak();
+        setIsBreakActive(true);
+        // Refresh activities
+        const activitiesResponse = await employeeAPI.getRecentActivities();
+        if (activitiesResponse.data.activities) {
+          setRecentActivities(activitiesResponse.data.activities);
+        }
+      } else {
+        // End break
+        await employeeAPI.endBreak();
+        setIsBreakActive(false);
+        // Refresh all data
+        const attendanceResponse = await employeeAPI.getTodayAttendance();
+        if (attendanceResponse.data) {
+          setTodayBreakStartTime(attendanceResponse.data.todayBreakStartTime);
+          setTodayBreakEndTime(attendanceResponse.data.todayBreakEndTime);
+        }
+        const breakLogsResponse = await employeeAPI.getBreakLogs();
+        if (breakLogsResponse.data.breakLogs) {
+          setBreakLogs(breakLogsResponse.data.breakLogs);
+        }
+        const activitiesResponse = await employeeAPI.getRecentActivities();
+        if (activitiesResponse.data.activities) {
+          setRecentActivities(activitiesResponse.data.activities);
+        }
+      }
+    } catch (err) {
+      alert('Error: ' + (err.response?.data?.error || err.message));
+    }
+  };
+
+  const formatTime = (dateString) => {
+    if (!dateString) return '--:-- __';
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  // Determine indicator states
+  const getCheckInIndicator = () => {
+    if (checkInTime && checkOutTime) return 'completed'; // Red - day completed
+    if (checkInTime && !checkOutTime) return 'active'; // Green - checked in
+    return 'pending'; // White - not checked in
+  };
+
+  const getCheckOutIndicator = () => {
+    if (checkOutTime) return 'completed'; // Red - checked out
+    if (checkInTime) return 'pending'; // White - can checkout
+    return 'pending'; // White - can't checkout without check-in
+  };
+
+  const getBreakIndicator = () => {
+    if (isBreakActive) return 'active'; // Green - break in progress
+    if (todayBreakEndTime) return 'completed'; // Red - break completed
+    return 'pending'; // White - no break yet
+  };
+
+  // Handle Indicator Clicks
+  const handleIndicatorClick = () => {
+    if (!checkInTime) {
+      handleCheckIn();
+    } else if (!checkOutTime) {
+      handleCheckOut();
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="home-container">
+        <HeaderBanner title={userName} subtitle="Good Morning" />
+        <div className="home-content">
+          <div className="loading-state">Loading...</div>
+        </div>
+        <BottomNavigation />
+      </div>
+    );
+  }
 
   return (
     <div className="home-container">
       <HeaderBanner 
         title={userName}
-        subtitle={userGreeting}
+        subtitle="Good Morning"
       />
       
       <div className="home-content">
-        {/* Check-in/Check-out Section */}
-        <div className="timings-card">
+        {error && <div className="error-banner">{error}</div>}
+
+        <div className="timings-container">
           <h3 className="card-title">Timings</h3>
-          <div className="timing-buttons">
-            <div className="timing-item">
-              <span className="timing-label">Check-in</span>
-              <div className={`timing-time ${checkInTime ? 'checked-in' : ''}`}>
-                {formatTime(checkInTime)}
+          
+          <div className="timings-row">
+            <div className="timing-column">
+              <div className="timing-label">Checked-In</div>
+              <div className="timing-display">
+                {checkInTime ? formatTime(checkInTime) : '--:-- __'}
               </div>
-              {!checkInTime && (
-                <button className="btn btn-primary" onClick={handleCheckIn}>
-                  Check In
-                </button>
-              )}
             </div>
-            <div className="timing-item">
-              <span className="timing-label">Check-out</span>
-              <div className="timing-time">
-                {formatTime(checkOutTime)}
+
+            <div className="timing-column">
+              <div className="timing-label">Check Out</div>
+              <div className="timing-display">
+                {checkOutTime ? formatTime(checkOutTime) : '--:-- __'}
               </div>
-              {checkInTime && !checkOutTime && (
-                <button className="btn btn-primary" onClick={handleCheckOut}>
-                  Check Out
-                </button>
-              )}
             </div>
+
+            <button 
+              className={`indicator-btn ${getCheckInIndicator()}`}
+              onClick={handleIndicatorClick}
+              disabled={checkInTime && checkOutTime}
+            >
+              <div className="indicator-pill-inner"></div>
+            </button>
           </div>
 
           {/* Break Section */}
-          <div className="break-section">
-            <button
-              className={`btn ${isBreak ? 'btn-danger' : 'btn-primary'}`}
-              onClick={handleBreakToggle}
-            >
-              {isBreak ? 'End Break' : 'Break'}
-            </button>
-            {isBreak && (
-              <span className="break-indicator">
-                <span className="indicator-dot"></span>
-                Break in progress...
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Break Logs */}
-        {breakLogs.length > 0 && (
-          <div className="break-logs-card">
-            <h3 className="card-title">Break Logs</h3>
-            <div className="break-logs-list">
-              {breakLogs.map((log, index) => (
-                <div key={index} className="break-log-item">
-                  <div className="break-log-info">
-                    <span className="break-label">Break</span>
-                    <span className="break-time">{log.startTime} pm</span>
-                  </div>
-                  <div className="break-log-info">
-                    <span className="break-label">Ended</span>
-                    <span className="break-time">{log.endTime} pm</span>
-                  </div>
-                  <div className="break-log-info">
-                    <span className="break-label">Date</span>
-                    <span className="break-time">{log.date}</span>
-                  </div>
-                </div>
-              ))}
+          <div className="break-row">
+            <div className="break-column">
+              <div className="break-label">Break</div>
+              <div className="timing-display">
+                {todayBreakStartTime ? formatTime(todayBreakStartTime) : '--:-- __'}
+              </div>
             </div>
+
+            <div className="break-column">
+              <div className="break-label">Ended</div>
+              <div className="timing-display">
+                {isBreakActive ? '--:-- __' : (todayBreakEndTime ? formatTime(todayBreakEndTime) : '--:-- __')}
+              </div>
+            </div>
+
+            <button 
+              className={`indicator-btn ${getBreakIndicator()}`}
+              onClick={!checkOutTime ? handleBreakToggle : undefined}
+              disabled={!!checkOutTime}
+            >
+              <div className="indicator-pill-inner"></div>
+            </button>
           </div>
-        )}
+
+          {/* Break Logs INSIDE timings-container */}
+          {breakLogs.length > 0 && (
+            <div className="break-logs-section">
+              <div className="break-logs-table">
+                {breakLogs.map((log, index) => (
+                  <div key={index}>
+                    <div className="break-log-header">
+                      <span>Break</span>
+                      <span>Ended</span>
+                      <span>Date</span>
+                    </div>
+                    <div className="break-log-row">
+                      <span className="log-value">{log.startTime}</span>
+                      <span className="log-value">{log.endTime}</span>
+                      <span className="log-value">{log.date}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Recent Activity */}
         <div className="activity-card">
           <h3 className="card-title">Recent Activity</h3>
-          <div className="activity-list">
-            {recentActivities.slice(0, 7).map((activity) => (
-              <div key={activity.id} className="activity-item">
-                <span className="activity-bullet">•</span>
-                <div className="activity-content">
-                  <p className="activity-message">{activity.message}</p>
-                  <span className="activity-time">{activity.time}</span>
+          <div className="activity-scroll-container">
+            {recentActivities.length > 0 ? (
+              recentActivities.map((activity) => (
+                <div key={activity.id} className="activity-item">
+                  <span className="activity-bullet">•</span>
+                  <div className="activity-text">
+                    <p className="activity-message">
+                      {activity.message} <span className="activity-time">— {activity.time}</span>
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Assigned Leads Preview */}
-        <div className="leads-preview-card">
-          <div className="leads-header">
-            <h3 className="card-title">Assigned Leads</h3>
-            <button className="view-all-btn" onClick={() => navigate('/leads')}>
-              View All
-            </button>
-          </div>
-          <div className="leads-list">
-            {assignedLeads.slice(0, 3).map((lead) => (
-              <div key={lead.id} className="lead-item">
-                <div className="lead-header">
-                  <div className="lead-name">{lead.name}</div>
-                  <span className={`status-badge status-${lead.status.toLowerCase()}`}>
-                    {lead.status}
-                  </span>
-                </div>
-                <div className="lead-details">
-                  <span className="lead-email">{lead.email}</span>
-                  <span className={`type-badge type-${lead.type.toLowerCase()}`}>
-                    {lead.type}
-                  </span>
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="no-activities">No recent activities</p>
+            )}
           </div>
         </div>
       </div>
 
-      <BottomNavigation currentPage="home" />
+      <BottomNavigation />
     </div>
   );
 }

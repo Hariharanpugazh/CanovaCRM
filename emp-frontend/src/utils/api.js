@@ -29,8 +29,13 @@ export const authAPI = {
 export const employeeAPI = {
   getProfile: () => apiClient.get('/employees/profile'),
   updateProfile: (data) => apiClient.patch('/employees/profile', data),
-  checkIn: () => apiClient.post('/employees/checkin'),
-  checkOut: () => apiClient.post('/employees/checkout'),
+  checkIn: () => apiClient.post('/employees/attendance/checkin'),
+  checkOut: () => apiClient.post('/employees/attendance/checkout'),
+  startBreak: () => apiClient.post('/employees/attendance/break-start'),
+  endBreak: () => apiClient.post('/employees/attendance/break-end'),
+  getBreakLogs: () => apiClient.get('/employees/attendance/break-logs'),
+  getTodayAttendance: () => apiClient.get('/employees/attendance/today'),
+  getRecentActivities: () => apiClient.get('/employees/activities/recent'),
 };
 
 export const leadsAPI = {

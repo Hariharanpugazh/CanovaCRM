@@ -4,13 +4,31 @@ import {
   createEmployee,
   updateEmployee,
   deleteEmployee,
-  bulkDeleteEmployees
+  bulkDeleteEmployees,
+  checkIn,
+  checkOut,
+  startBreak,
+  endBreak,
+  getBreakLogs,
+  getTodayAttendance,
+  getRecentActivities
 } from '../controllers/employeeController.js';
 import { authMiddleware, adminOnly } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 router.use(authMiddleware);
+
+// Employee-specific routes (available to all authenticated users)
+router.post('/attendance/checkin', checkIn);
+router.post('/attendance/checkout', checkOut);
+router.post('/attendance/break-start', startBreak);
+router.post('/attendance/break-end', endBreak);
+router.get('/attendance/break-logs', getBreakLogs);
+router.get('/attendance/today', getTodayAttendance);
+router.get('/activities/recent', getRecentActivities);
+
+// Admin-only routes
 router.use(adminOnly);
 
 router.get('/', getAllEmployees);
